@@ -1,0 +1,157 @@
+# ============================================================================
+# .gitignore — Proyecto RanchUNI
+# Stack: Node.js 20 + Fastify + React + Vite + PostgreSQL + Redis + Docker
+# Repositorio: https://github.com/HitLP38/ComedorUni
+# ============================================================================
+
+# -------------------------------
+# Variables de entorno y secretos
+# -------------------------------
+.env
+.env.*
+!.env.example
+!.env.sample
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+secrets/
+credentials/
+
+# -------------------------------
+# Node.js / npm / yarn / pnpm
+# -------------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.npm
+.yarn/
+.yarn-integrity
+.pnp.*
+.pnpm-store/
+
+# -------------------------------
+# Build / artefactos
+# -------------------------------
+dist/
+build/
+out/
+.next/
+.vercel/
+.netlify/
+.turbo/
+
+# -------------------------------
+# Vite
+# -------------------------------
+.vite/
+*.local
+
+# -------------------------------
+# Prisma (ORM)
+# -------------------------------
+.prisma/
+prisma/*.db
+prisma/*.db-journal
+# ATENCIÓN: NO ignorar prisma/migrations/ — las migraciones SÍ se commitean
+
+# -------------------------------
+# Tests y cobertura
+# -------------------------------
+coverage/
+.nyc_output/
+*.lcov
+.vitest-cache/
+test-results/
+playwright-report/
+playwright/.cache/
+
+# -------------------------------
+# Logs
+# -------------------------------
+logs/
+*.log
+pino-*.log
+
+# -------------------------------
+# Docker — volúmenes locales
+# -------------------------------
+docker-data/
+postgres-data/
+redis-data/
+pgdata/
+*.dump
+*.sql.gz
+*.bak
+
+# -------------------------------
+# Python (skills, scripts auxiliares)
+# -------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# -------------------------------
+# IDE / editores
+# -------------------------------
+.vscode/*
+!.vscode/settings.json.example
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+
+# -------------------------------
+# Sistemas operativos
+# -------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# -------------------------------
+# Archivos temporales / cache
+# -------------------------------
+tmp/
+temp/
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+
+# -------------------------------
+# Documentos binarios (usamos .md como fuente de verdad)
+# -------------------------------
+~$*.docx
+~$*.xlsx
+~$*.pptx
+*.docx
+*.xlsx
+*.pptx
+# Excepciones: si se quiere versionar entregables finales firmados,
+# añadirlos explícitamente con `git add -f nombre.docx`
+
+# -------------------------------
+# Archivos personales del equipo
+# -------------------------------
+notas-personales/
+*.private.md
+scratch/
