@@ -51,16 +51,18 @@ Aplicación web de gestión y emisión de tickets de turno para el comedor unive
 
 Capítulos entregados (fases 1 y 2): Resumen, Introducción, Marcos teórico y conceptual (cola virtual, concurrencia, grafos, Big-O), Grupo objetivo, Definición del proyecto, EDT, Cronograma, Recursos, Presupuesto, Riesgos.
 
-Avances internos de fase 3 (pendientes de volcar al docx final por el usuario):
+Avances internos de fase 3 (pendientes de volcar al docx final por el usuario). Ubicación a partir del 2026-04-19: carpeta `Avances/` en la raíz del proyecto.
 
-- `mono_Avance1_Requerimientos.md` — Sección 3.1 completa (3.1.1 funcionales RF-01 a RF-12, 3.1.2 no funcionales RNF-01 a RNF-10, 3.1.3 detallados RD-01 a RD-14). Redactado en APA 7 con citas integradas al marco teórico existente. Creado 2026-04-19.
-- `referencias.md` — Bibliografía consolidada APA 7. Incluye las referencias previas del marco teórico más las nuevas de ISO 29148, ISO 25010, Sommerville, Pressman, NIST, OWASP, RFC 6238, RFC 8446, WCAG 2.1, Knuth, Silberschatz, Saltzer & Schroeder, Microsoft Azure Architecture Center.
+- `Avances/mono_Avance1_Requerimientos.md` — Sección 3.1 completa (3.1.1 funcionales RF-01 a RF-12, 3.1.2 no funcionales RNF-01 a RNF-10, 3.1.3 detallados RD-01 a RD-14). Redactado en APA 7 con citas integradas al marco teórico existente. Creado 2026-04-19.
+- `referencias.md` (sigue en raíz) — Bibliografía consolidada APA 7. Incluye las referencias previas del marco teórico más las nuevas de ISO 29148, ISO 25010, Sommerville, Pressman, NIST, OWASP, RFC 6238, RFC 8446, WCAG 2.1, Knuth, Silberschatz, Saltzer & Schroeder, Microsoft Azure Architecture Center.
 
 Próximo entregable esperado según EDT y cronograma: fase 3.2 Diseño (3.2.1 diseño funcional, 3.2.2 diseño del sistema, 3.2.3 diseño de interfaz) del 23 al 26 de abril. Archivo propuesto: `mono_Avance2_Diseño.md`.
 
 ## Convención de archivos
 
-- `Monografía.md`: documento principal de redacción APA 7 (el usuario lo edita manualmente).
-- `mono_AvanceN_NombreSeccion.md`: archivos con texto de cada nueva sección que el usuario pega luego al docx final.
-- `referencias.md`: acumulado de referencias APA 7 usadas en la monografía.
+- `Monografía.md` (raíz): documento principal de redacción APA 7 (el usuario lo edita manualmente).
+- `Avances/mono_AvanceN_NombreSeccion.md`: archivos con texto de cada nueva sección que el usuario pega luego al docx final. TODOS los avances van dentro de la carpeta `Avances/`.
+- `referencias.md` (raíz): acumulado de referencias APA 7 usadas en la monografía.
+- `Documentos/`: insumos de apoyo (EDT.md, etc.).
 - `Proyecto/`: carpeta para código del sistema (aún no creada).
+- `.gitignore`: reglas de ignorado preparadas para stack Node + React + Postgres + Redis + Docker.
