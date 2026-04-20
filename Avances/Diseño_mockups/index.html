@@ -1,0 +1,1600 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RanchUNI — Catálogo de Vistas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* ============================================================
+       PALETA INSTITUCIONAL UNI — variables globales
+       ============================================================ */
+    :root {
+      --granate: #7B1E23;
+      --granate-dark: #5E1418;
+      --granate-light: #A12835;
+      --dorado: #D4A84B;
+      --dorado-light: #E8C876;
+      --crema: #F5EDE0;
+      --fondo: #F7F5F1;
+      --blanco: #FFFFFF;
+      --texto: #1F2937;
+      --texto-secundario: #6B7280;
+      --texto-muted: #9CA3AF;
+      --borde: #E5E7EB;
+      --exito: #10B981;
+      --alerta: #F59E0B;
+      --error: #DC2626;
+      --info: #3B82F6;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --shadow-lg: 0 10px 30px rgba(0,0,0,0.10);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      background: #E8E6E2;
+      color: var(--texto);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    body { padding: 40px 20px 80px; }
+
+    /* ============================================================
+       CABECERA DEL CATÁLOGO
+       ============================================================ */
+    .catalog { max-width: 1400px; margin: 0 auto; }
+    .catalog-header {
+      padding: 32px 40px;
+      background: var(--blanco);
+      border-radius: 20px;
+      box-shadow: var(--shadow-md);
+      display: flex; align-items: center; gap: 24px;
+      margin-bottom: 32px;
+      border-top: 6px solid var(--granate);
+    }
+    .catalog-header img { height: 72px; width: auto; }
+    .catalog-header .titles h1 {
+      font-size: 28px; font-weight: 800; color: var(--granate); letter-spacing: -0.5px;
+    }
+    .catalog-header .titles p { color: var(--texto-secundario); font-size: 15px; margin-top: 4px; }
+    .catalog-header .meta { margin-left: auto; text-align: right; color: var(--texto-muted); font-size: 13px; }
+    .catalog-header .meta strong { display:block; color: var(--texto); font-size: 14px; font-weight: 600; }
+
+    /* Secciones y grilla de pantallas */
+    .section-title {
+      padding: 16px 0 20px;
+      color: var(--granate);
+      font-size: 20px; font-weight: 700;
+      letter-spacing: -0.2px;
+      border-bottom: 2px solid var(--dorado);
+      margin-bottom: 24px;
+    }
+    .section-title span { color: var(--texto-secundario); font-weight: 500; font-size: 14px; margin-left: 10px;}
+    .grid-mobile {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 28px; margin-bottom: 56px;
+    }
+    .grid-desktop { display: grid; grid-template-columns: 1fr; gap: 28px; }
+
+    /* Frames de dispositivo */
+    .screen-card {
+      background: var(--blanco);
+      border-radius: 16px;
+      box-shadow: var(--shadow-md);
+      padding: 24px;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .screen-label { width: 100%; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px dashed var(--borde); }
+    .screen-label h3 { font-size: 15px; font-weight: 700; color: var(--texto); }
+    .screen-label p { font-size: 12px; color: var(--texto-muted); margin-top: 2px; }
+
+    .mobile-frame {
+      width: 340px; height: 690px;
+      background: #1a1a1a;
+      border-radius: 36px;
+      padding: 10px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.20);
+    }
+    .mobile-screen {
+      width: 100%; height: 100%;
+      background: var(--fondo);
+      border-radius: 28px;
+      overflow: hidden;
+      position: relative;
+      display: flex; flex-direction: column;
+    }
+    .mobile-notch {
+      position: absolute; top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 100px; height: 22px;
+      background: #1a1a1a;
+      border-bottom-left-radius: 14px;
+      border-bottom-right-radius: 14px;
+      z-index: 30;
+    }
+    .desktop-frame {
+      width: 100%; max-width: 1280px;
+      aspect-ratio: 16/9;
+      background: #1a1a1a;
+      border-radius: 14px 14px 6px 6px;
+      padding: 10px 10px 24px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.20);
+      position: relative;
+    }
+    .desktop-frame::after {
+      content: '';
+      position: absolute; bottom: 6px; left: 50%;
+      transform: translateX(-50%);
+      width: 80px; height: 6px;
+      background: #333; border-radius: 3px;
+    }
+    .desktop-screen {
+      width: 100%; height: 100%;
+      background: var(--fondo);
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+    }
+
+    /* Componentes comunes móvil */
+    .m-statusbar {
+      height: 28px; flex-shrink: 0;
+      background: var(--fondo);
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 4px 24px 0;
+      font-size: 11px; font-weight: 600; color: var(--texto);
+    }
+    .m-header {
+      background: var(--granate);
+      color: var(--blanco);
+      padding: 16px 20px;
+      display: flex; align-items: center; gap: 12px;
+      flex-shrink: 0;
+    }
+    .m-header img { height: 32px; width: auto; filter: brightness(0) invert(1); }
+    .m-header .brand { font-weight: 700; font-size: 16px; letter-spacing: 0.2px; }
+    .m-header .sub { font-size: 11px; opacity: 0.85; margin-top: 1px; }
+    .m-header .icon-right { margin-left: auto; font-size: 18px; opacity: 0.9; }
+    .m-body {
+      flex: 1; overflow-y: auto;
+      padding: 20px;
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .m-footer {
+      padding: 14px 20px;
+      border-top: 1px solid var(--borde);
+      background: var(--blanco);
+      flex-shrink: 0;
+    }
+    .btn {
+      display: block; width: 100%;
+      padding: 13px 16px;
+      border-radius: 10px;
+      border: none; cursor: pointer;
+      font-family: inherit; font-size: 14px; font-weight: 600;
+      text-align: center; transition: opacity 0.2s;
+    }
+    .btn-primary { background: var(--granate); color: var(--blanco); }
+    .btn-primary:hover { background: var(--granate-dark); }
+    .btn-secondary { background: transparent; color: var(--granate); border: 1.5px solid var(--granate); }
+    .btn-ghost { background: var(--crema); color: var(--granate); }
+    .btn-danger { background: var(--error); color: var(--blanco); }
+    .btn-outline-danger { background: transparent; color: var(--error); border: 1.5px solid var(--error); }
+    .input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid var(--borde);
+      border-radius: 10px;
+      font-family: inherit; font-size: 14px;
+      background: var(--blanco);
+      transition: border 0.2s;
+    }
+    .input:focus { outline: none; border-color: var(--granate); }
+    .input:disabled, .input[readonly] { background: var(--fondo); color: var(--texto-secundario); }
+    .input-label {
+      display: block;
+      font-size: 12px; font-weight: 600;
+      color: var(--texto-secundario);
+      margin-bottom: 6px;
+      text-transform: uppercase; letter-spacing: 0.3px;
+    }
+    .card {
+      background: var(--blanco);
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+    }
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 0.2px;
+    }
+    .badge-success { background: #D1FAE5; color: #065F46; }
+    .badge-warning { background: #FEF3C7; color: #92400E; }
+    .badge-error { background: #FEE2E2; color: #991B1B; }
+    .badge-info { background: #DBEAFE; color: #1E40AF; }
+    .badge-gold { background: var(--dorado-light); color: #7A5B12; }
+
+    /* ============================================================
+       PANTALLA 1: LANDING (Bienvenida — 2 botones)
+       ============================================================ */
+    .landing-hero {
+      flex: 1;
+      background: linear-gradient(160deg, var(--granate) 0%, var(--granate-dark) 100%);
+      color: var(--blanco);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 40px 28px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .landing-hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(circle at 85% 15%, rgba(212,168,75,0.25) 0, transparent 40%),
+        radial-gradient(circle at 15% 90%, rgba(212,168,75,0.15) 0, transparent 50%);
+      pointer-events: none;
+    }
+    .landing-logo {
+      width: 88px; height: 88px; border-radius: 22px;
+      background: var(--blanco);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.25);
+      position: relative; z-index: 1;
+    }
+    .landing-logo img { height: 58px; }
+    .landing-title {
+      font-size: 32px; font-weight: 800;
+      letter-spacing: -0.5px; line-height: 1.1;
+      position: relative; z-index: 1;
+    }
+    .landing-title .accent { color: var(--dorado); }
+    .landing-sub {
+      font-size: 14px; opacity: 0.9;
+      margin-top: 10px;
+      max-width: 240px;
+      position: relative; z-index: 1;
+    }
+    .landing-buttons {
+      padding: 20px 24px 28px;
+      background: var(--blanco);
+      display: flex; flex-direction: column; gap: 10px;
+      flex-shrink: 0;
+    }
+    .landing-buttons .btn { padding: 15px 16px; font-size: 15px; }
+    .landing-footnote {
+      text-align: center;
+      font-size: 11px;
+      color: var(--texto-muted);
+      padding: 0 20px 12px;
+      background: var(--blanco);
+    }
+
+    /* ============================================================
+       PANTALLA 2: REGISTRO
+       ============================================================ */
+    .reg-hero { text-align: center; padding: 10px 0 4px; }
+    .reg-hero h2 { color: var(--granate); font-size: 22px; font-weight: 700; }
+    .reg-hero p { color: var(--texto-secundario); font-size: 13px; margin-top: 4px; }
+
+    /* ============================================================
+       PANTALLA 3: LOGIN (estilo Yape)
+       ============================================================ */
+    .login-hero {
+      background: var(--granate);
+      padding: 32px 24px 40px;
+      text-align: center;
+      color: var(--blanco);
+    }
+    .login-hero img { height: 56px; filter: brightness(0) invert(1); margin-bottom: 12px; }
+    .login-hero h2 { font-size: 20px; font-weight: 700; }
+    .login-hero p { font-size: 12px; opacity: 0.85; margin-top: 4px; }
+    .login-card {
+      background: var(--blanco);
+      margin: -20px 16px 0;
+      border-radius: 18px;
+      padding: 24px 20px;
+      box-shadow: var(--shadow-md);
+    }
+    .login-card h3 { text-align: center; font-size: 16px; font-weight: 600; color: var(--texto); margin-bottom: 18px;}
+    .pin-dots { display:flex; justify-content:center; gap: 12px; margin-bottom: 24px; }
+    .pin-dots .dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--borde); }
+    .pin-dots .dot.filled { background: var(--granate); border-color: var(--granate); }
+    .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .numpad button {
+      aspect-ratio: 1;
+      background: var(--fondo);
+      border: none; border-radius: 50%;
+      font-family: inherit; font-size: 20px; font-weight: 500; color: var(--texto);
+      cursor: pointer;
+    }
+    .numpad button:hover { background: var(--crema); }
+    .numpad .fingerprint { color: var(--granate); font-size: 22px; }
+    .numpad .clear { color: var(--texto-muted); font-size: 20px; }
+
+    /* ============================================================
+       PANTALLA 4: HOME ALUMNO (Cuadrícula estilo Yape)
+       ============================================================ */
+    .home-topbar {
+      background: var(--granate);
+      color: var(--blanco);
+      padding: 22px 20px 30px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .home-topbar .avatar-sm {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: var(--dorado); color: var(--granate-dark);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 14px;
+    }
+    .home-topbar .greet { font-size: 12px; opacity: 0.85; }
+    .home-topbar .greet strong { display: block; font-size: 16px; font-weight: 700; opacity: 1; margin-top: 1px; }
+    .home-topbar .bell { margin-left: auto; font-size: 20px; opacity: 0.9; }
+    .home-cta {
+      background: var(--blanco);
+      margin: -18px 16px 0;
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: var(--shadow-md);
+      display: flex; align-items: center; gap: 14px;
+      border-left: 5px solid var(--dorado);
+    }
+    .home-cta .icon-cta {
+      width: 48px; height: 48px; border-radius: 12px;
+      background: var(--crema); color: var(--granate);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; flex-shrink: 0;
+    }
+    .home-cta .label { font-size: 11px; color: var(--texto-muted); text-transform: uppercase; letter-spacing: 0.4px; font-weight: 600; }
+    .home-cta .value { font-size: 16px; font-weight: 700; color: var(--texto); margin-top: 1px; }
+    .home-cta .sub { font-size: 11px; color: var(--texto-secundario); margin-top: 2px; }
+    .home-cta .arrow { margin-left: auto; color: var(--granate); font-size: 22px; font-weight: 600; }
+
+    .home-section-title {
+      font-size: 12px; font-weight: 700;
+      color: var(--texto-secundario);
+      text-transform: uppercase; letter-spacing: 0.5px;
+      margin: 6px 0 4px;
+    }
+    .home-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .home-tile {
+      background: var(--blanco);
+      border-radius: 14px;
+      padding: 14px 6px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+    }
+    .home-tile .tile-icon {
+      width: 42px; height: 42px; border-radius: 12px;
+      margin: 0 auto 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+    .home-tile .tile-icon.c1 { background: #FDE8EA; color: var(--granate); }
+    .home-tile .tile-icon.c2 { background: var(--dorado-light); color: #7A5B12; }
+    .home-tile .tile-icon.c3 { background: #DBEAFE; color: #1E40AF; }
+    .home-tile .tile-icon.c4 { background: #FEF3C7; color: #92400E; }
+    .home-tile .tile-icon.c5 { background: #E0F2FE; color: #075985; }
+    .home-tile .tile-icon.c6 { background: #FEE2E2; color: #991B1B; }
+    .home-tile .tile-label { font-size: 11px; font-weight: 600; color: var(--texto); line-height: 1.25; }
+
+    /* ============================================================
+       PANTALLA 5: COLA VIRTUAL
+       ============================================================ */
+    .cola-big { text-align:center; padding: 18px 0; }
+    .cola-label { font-size: 12px; color: var(--texto-secundario); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+    .cola-num { font-size: 64px; font-weight: 800; color: var(--granate); line-height: 1; margin-top: 6px; }
+    .cola-prefix { font-size: 28px; font-weight: 600; color: var(--texto-muted); vertical-align: super; }
+    .progress { height: 8px; background: var(--borde); border-radius: 4px; overflow: hidden; margin: 10px 0; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--granate), var(--dorado)); width: 62%; }
+    .heartbeat-row { display: flex; align-items: center; gap: 8px; justify-content: center; font-size: 12px; color: var(--exito); font-weight: 500; }
+    .heartbeat-dot {
+      width: 10px; height: 10px; border-radius: 50%; background: var(--exito);
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+    /* ============================================================
+       PANTALLA 6: SELECCIÓN DE TURNO
+       ============================================================ */
+    .tabs { display: flex; gap: 0; background: var(--blanco); border-radius: 10px; padding: 4px; border: 1px solid var(--borde); }
+    .tab { flex: 1; padding: 10px; text-align: center; font-size: 13px; font-weight: 600; color: var(--texto-secundario); border-radius: 8px; cursor: pointer; }
+    .tab.active { background: var(--granate); color: var(--blanco); }
+    .turno-item {
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--blanco);
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 1.5px solid var(--borde);
+      cursor: pointer;
+    }
+    .turno-item.selected { border-color: var(--granate); background: var(--crema); }
+    .turno-item.full { opacity: 0.55; cursor: not-allowed; }
+    .turno-hora { font-size: 18px; font-weight: 700; color: var(--texto); }
+    .turno-meta { font-size: 11px; color: var(--texto-secundario); margin-top: 2px; }
+    .cupos-bar { width: 70px; height: 5px; background: var(--borde); border-radius: 3px; margin-top: 6px; overflow: hidden; }
+    .cupos-fill { height: 100%; border-radius: 3px; }
+    .timer-banner {
+      background: var(--dorado-light);
+      color: #7A5B12;
+      padding: 10px 16px;
+      font-size: 12px; font-weight: 600;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .timer-banner strong { font-weight: 700; }
+
+    /* ============================================================
+       PANTALLA 7: CONFIRMACIÓN (con código de barras del alumno)
+       ============================================================ */
+    .conf-wrap { text-align: center; padding: 26px 16px 10px; }
+    .check-circle {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: var(--exito);
+      color: var(--blanco);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 14px;
+      font-size: 34px; font-weight: 700;
+      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.35);
+    }
+    .conf-wrap h2 { font-size: 20px; color: var(--texto); font-weight: 700; }
+    .conf-wrap p { color: var(--texto-secundario); font-size: 13px; margin-top: 4px; }
+    .detail-row {
+      display: flex; justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px dashed var(--borde);
+      font-size: 13px;
+    }
+    .detail-row:last-child { border: none; }
+    .detail-row .k { color: var(--texto-secundario); }
+    .detail-row .v { color: var(--texto); font-weight: 600; }
+
+    /* ============================================================
+       CÓDIGO DE BARRAS (CSS puro, simula CODE128)
+       ============================================================ */
+    .barcode-wrap {
+      background: var(--blanco);
+      border-radius: 12px;
+      padding: 14px 16px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+    .barcode-wrap .bc-label {
+      font-size: 10px; color: var(--texto-muted);
+      text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .barcode {
+      height: 64px;
+      display: flex; justify-content: center; align-items: stretch;
+      gap: 0; padding: 4px 0;
+    }
+    .barcode i {
+      display: block; background: #000; height: 100%;
+    }
+    .bc-thin { width: 2px; margin-right: 1px; }
+    .bc-mid { width: 3px; margin-right: 1px; }
+    .bc-thick { width: 5px; margin-right: 1px; }
+    .bc-space-w { width: 3px; background: transparent !important; margin-right: 0; }
+    .bc-space-s { width: 1px; background: transparent !important; margin-right: 0; }
+    .barcode-digits {
+      font-family: 'Courier New', monospace;
+      font-size: 18px; font-weight: 700;
+      letter-spacing: 6px;
+      color: var(--texto);
+      margin-top: 4px;
+    }
+    .barcode-caption {
+      font-size: 11px; color: var(--texto-muted); margin-top: 4px;
+    }
+
+    /* Barra grande para pantalla Mi código */
+    .barcode-big { height: 120px; }
+    .barcode-big i { height: 100%; }
+    .barcode-big .bc-thin { width: 3px; }
+    .barcode-big .bc-mid { width: 5px; }
+    .barcode-big .bc-thick { width: 8px; }
+    .barcode-big .bc-space-w { width: 5px; }
+
+    /* ============================================================
+       PANTALLA 8: MI CÓDIGO (barcode standalone)
+       ============================================================ */
+    .mycode-card {
+      background: var(--blanco);
+      border-radius: 18px;
+      padding: 28px 20px;
+      box-shadow: var(--shadow-md);
+      text-align: center;
+      border: 2px solid var(--dorado);
+    }
+    .mycode-card .name { font-size: 15px; font-weight: 700; color: var(--texto); }
+    .mycode-card .fac { font-size: 11px; color: var(--texto-muted); margin-top: 2px; }
+    .mycode-note {
+      background: var(--crema); color: #7A5B12;
+      padding: 10px 14px; border-radius: 10px;
+      font-size: 11px; text-align: center; line-height: 1.5;
+    }
+
+    /* ============================================================
+       PANTALLA 9: MIS DATOS
+       ============================================================ */
+    .datos-sec-title {
+      font-size: 11px; font-weight: 700;
+      color: var(--texto-secundario);
+      text-transform: uppercase; letter-spacing: 0.5px;
+      margin-top: 4px;
+    }
+    .danger-card {
+      background: #FEE2E2;
+      border-left: 4px solid var(--error);
+      padding: 12px 14px; border-radius: 10px;
+      font-size: 12px; color: #991B1B; line-height: 1.5;
+    }
+    .danger-card strong { display: block; margin-bottom: 2px; color: #7F1D1D; font-size: 13px; }
+
+    /* ============================================================
+       PANTALLA 10: SANCIONES
+       ============================================================ */
+    .sanc-hero {
+      background: linear-gradient(135deg, var(--dorado-light), var(--crema));
+      border-radius: 14px;
+      padding: 22px 18px;
+      text-align: center;
+      border: 1.5px solid var(--dorado);
+    }
+    .sanc-hero .big-count {
+      font-size: 54px; font-weight: 800; color: var(--granate);
+      line-height: 1;
+    }
+    .sanc-hero .big-count small { font-size: 18px; color: var(--texto-secundario); font-weight: 600; }
+    .sanc-hero .label-count {
+      font-size: 12px; color: var(--texto-secundario);
+      text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;
+      margin-top: 4px;
+    }
+    .sanc-progress {
+      display: flex; gap: 6px; justify-content: center;
+      margin-top: 14px;
+    }
+    .sanc-progress .p-dot {
+      width: 28px; height: 8px; border-radius: 4px;
+      background: var(--borde);
+    }
+    .sanc-progress .p-dot.on { background: var(--error); }
+    .sanc-progress .p-dot.warn { background: var(--dorado); }
+    .sanc-threshold {
+      margin-top: 12px; font-size: 11px; color: var(--texto-secundario);
+    }
+    .sanc-threshold strong { color: var(--granate); }
+
+    .sanc-list-title {
+      font-size: 11px; font-weight: 700;
+      color: var(--texto-secundario);
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .sanc-item {
+      background: var(--blanco);
+      border-radius: 10px;
+      padding: 12px 14px;
+      border: 1px solid var(--borde);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .sanc-item .fecha { font-size: 13px; font-weight: 600; color: var(--texto); }
+    .sanc-item .det { font-size: 11px; color: var(--texto-muted); margin-top: 1px; }
+
+    /* ============================================================
+       PANTALLA 11: SOLICITUDES
+       ============================================================ */
+    .req-empty-msg { font-size: 12px; color: var(--texto-muted); text-align: center; padding: 4px 0; }
+    .req-item {
+      background: var(--blanco);
+      border-radius: 12px;
+      padding: 14px;
+      border: 1px solid var(--borde);
+      display: flex; gap: 12px; align-items: flex-start;
+    }
+    .req-item .req-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: var(--crema); color: var(--granate);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    .req-item.tipo-supl .req-icon { background: #FEE2E2; color: #991B1B; }
+    .req-item.tipo-sanc .req-icon { background: #FEF3C7; color: #92400E; }
+    .req-item.tipo-nosh .req-icon { background: #DBEAFE; color: #1E40AF; }
+    .req-item .titulo { font-size: 13px; font-weight: 700; color: var(--texto); }
+    .req-item .sub { font-size: 11px; color: var(--texto-muted); margin-top: 2px; }
+    .req-item .fecha-env { font-size: 10px; color: var(--texto-muted); margin-top: 6px; }
+    .req-item .right { margin-left: auto; text-align: right; }
+    .req-types-title {
+      font-size: 11px; font-weight: 700;
+      color: var(--texto-secundario);
+      text-transform: uppercase; letter-spacing: 0.5px;
+      margin-top: 6px;
+    }
+
+    /* ============================================================
+       DASHBOARD OPERADOR (Desktop)
+       ============================================================ */
+    .d-header {
+      height: 60px;
+      background: var(--granate);
+      color: var(--blanco);
+      display: flex; align-items: center; padding: 0 24px;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+    .d-header img { height: 32px; filter: brightness(0) invert(1); }
+    .d-header h1 { font-size: 16px; font-weight: 700; }
+    .d-header .meta { margin-left: auto; display: flex; gap: 24px; font-size: 13px; align-items: center; }
+    .d-header .meta .pill { background: var(--dorado); color: var(--granate-dark); padding: 4px 12px; border-radius: 999px; font-weight: 700; font-size: 11px; letter-spacing: 0.3px;}
+
+    .op-body { flex: 1; display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; padding: 20px; }
+    .op-scan {
+      background: var(--blanco); border-radius: 14px; padding: 22px; box-shadow: var(--shadow-sm);
+      display: flex; flex-direction: column; gap: 16px;
+    }
+    .op-scan h2 { font-size: 16px; font-weight: 700; color: var(--texto); }
+    .op-scan .input-big {
+      padding: 18px 20px; font-size: 20px; letter-spacing: 2px; text-align: center;
+      border: 2.5px dashed var(--granate); border-radius: 12px;
+      background: var(--crema); color: var(--granate); font-weight: 600;
+    }
+    .op-scan .helper { font-size: 11px; color: var(--texto-muted); text-align: center; }
+    .op-result {
+      background: var(--blanco); border-radius: 14px; padding: 22px; box-shadow: var(--shadow-sm);
+      border-top: 4px solid var(--exito);
+    }
+    .op-result .avatar {
+      width: 60px; height: 60px; border-radius: 50%;
+      background: var(--granate); color: var(--blanco);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; font-weight: 700;
+    }
+    .op-result .student { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+    .op-result .student h3 { font-size: 16px; font-weight: 700; }
+    .op-result .student p { font-size: 12px; color: var(--texto-muted); }
+    .op-result .grid-kv { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding-top: 14px; border-top: 1px solid var(--borde);}
+    .op-result .grid-kv .k { font-size: 11px; color: var(--texto-muted); text-transform: uppercase; font-weight: 600;}
+    .op-result .grid-kv .v { font-size: 14px; font-weight: 600; color: var(--texto); margin-top: 2px;}
+    .op-table { grid-column: 1 / -1; background: var(--blanco); border-radius: 14px; padding: 20px; box-shadow: var(--shadow-sm); }
+    .op-table h2 { font-size: 15px; font-weight: 700; margin-bottom: 12px; }
+    .op-table table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .op-table th {
+      text-align: left; padding: 8px 10px; font-weight: 600;
+      color: var(--texto-muted); text-transform: uppercase; letter-spacing: 0.5px;
+      border-bottom: 1.5px solid var(--borde);
+    }
+    .op-table td { padding: 10px; border-bottom: 1px solid var(--borde); color: var(--texto); }
+
+    /* ============================================================
+       DASHBOARD ADMIN (Desktop)
+       ============================================================ */
+    .admin-layout { display: grid; grid-template-columns: 220px 1fr; width: 100%; height: 100%; }
+    .admin-side { background: var(--granate); color: var(--blanco); padding: 24px 0; }
+    .admin-side .brand {
+      padding: 0 24px 20px; display: flex; align-items: center; gap: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+      margin-bottom: 14px;
+    }
+    .admin-side .brand img { height: 28px; filter: brightness(0) invert(1); }
+    .admin-side .brand span { font-weight: 700; font-size: 15px; }
+    .admin-side nav a {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 24px;
+      color: rgba(255,255,255,0.85);
+      font-size: 13px; font-weight: 500;
+      text-decoration: none;
+      border-left: 3px solid transparent;
+    }
+    .admin-side nav a.active {
+      background: rgba(255,255,255,0.10);
+      border-left-color: var(--dorado);
+      color: var(--blanco); font-weight: 600;
+    }
+    .admin-side nav a:hover { background: rgba(255,255,255,0.05); }
+
+    .admin-main { padding: 24px; overflow-y: auto; background: var(--fondo); }
+    .admin-topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .admin-topbar h1 { font-size: 20px; font-weight: 700; color: var(--texto); }
+    .admin-topbar p { font-size: 12px; color: var(--texto-muted); }
+
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+    .kpi {
+      background: var(--blanco); border-radius: 12px; padding: 16px;
+      box-shadow: var(--shadow-sm);
+      border-left: 4px solid var(--granate);
+    }
+    .kpi:nth-child(2) { border-left-color: var(--dorado); }
+    .kpi:nth-child(3) { border-left-color: var(--exito); }
+    .kpi:nth-child(4) { border-left-color: var(--alerta); }
+    .kpi .lbl { font-size: 11px; color: var(--texto-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.3px; }
+    .kpi .val { font-size: 26px; font-weight: 800; color: var(--texto); margin-top: 4px;}
+    .kpi .delta { font-size: 11px; color: var(--exito); font-weight: 600; margin-top: 2px;}
+
+    .chart-row { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; margin-bottom: 20px;}
+    .chart-card { background: var(--blanco); border-radius: 12px; padding: 18px; box-shadow: var(--shadow-sm); }
+    .chart-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 14px; color: var(--texto);}
+
+    .bar-chart { display: flex; align-items: flex-end; gap: 12px; height: 140px; padding: 10px 0; }
+    .bar-chart .bar {
+      flex: 1; background: linear-gradient(180deg, var(--granate), var(--granate-light));
+      border-radius: 6px 6px 0 0;
+      position: relative;
+      display: flex; align-items: flex-start; justify-content: center;
+    }
+    .bar-chart .bar::before {
+      content: attr(data-v); position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
+      font-size: 10px; color: var(--texto); font-weight: 600;
+    }
+    .bar-chart .bar::after {
+      content: attr(data-lbl); position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%);
+      font-size: 10px; color: var(--texto-muted); font-weight: 500;
+    }
+    .bar-chart { padding-bottom: 26px; padding-top: 22px; }
+
+    .donut-card .donut {
+      width: 140px; height: 140px; border-radius: 50%;
+      margin: 0 auto;
+      background: conic-gradient(var(--granate) 0 72%, var(--dorado) 72% 88%, var(--error) 88% 100%);
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+    .donut-center {
+      width: 86px; height: 86px; border-radius: 50%;
+      background: var(--blanco);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
+    .donut-center .big { font-size: 20px; font-weight: 800; color: var(--granate);}
+    .donut-center .sml { font-size: 10px; color: var(--texto-muted); }
+    .legend { display: flex; flex-direction: column; gap: 6px; margin-top: 14px; font-size: 11px;}
+    .legend div { display: flex; align-items: center; gap: 8px;}
+    .legend .sq { width: 10px; height: 10px; border-radius: 2px;}
+
+    .cfg-table { background: var(--blanco); border-radius: 12px; padding: 18px; box-shadow: var(--shadow-sm);}
+    .cfg-table .hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .cfg-table h3 { font-size: 14px; font-weight: 700; }
+    .cfg-table .btn-add {
+      background: var(--granate); color: var(--blanco); border: none;
+      padding: 7px 14px; border-radius: 8px;
+      font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer;
+    }
+    .cfg-table table { width: 100%; border-collapse: collapse; font-size: 12px;}
+    .cfg-table th {
+      text-align: left; padding: 8px 10px; font-weight: 600;
+      color: var(--texto-muted); text-transform: uppercase; letter-spacing: 0.5px;
+      border-bottom: 1.5px solid var(--borde); font-size: 10px;
+    }
+    .cfg-table td { padding: 10px; border-bottom: 1px solid var(--borde); color: var(--texto);}
+    .cfg-table input[type=number] { width: 60px; padding: 4px 6px; border: 1px solid var(--borde); border-radius: 5px; font-family: inherit; font-size: 12px;}
+
+    /* Footer del catálogo */
+    .catalog-footer {
+      max-width: 1400px; margin: 60px auto 0;
+      padding: 24px 40px;
+      background: var(--blanco);
+      border-radius: 14px;
+      font-size: 12px; color: var(--texto-muted);
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+    .catalog-footer strong { color: var(--granate); font-weight: 600; }
+  </style>
+</head>
+<body>
+
+<!-- ============================================================
+     CABECERA DEL CATÁLOGO
+     ============================================================ -->
+<div class="catalog">
+  <header class="catalog-header">
+    <img src="assets/uni-logo.png" alt="Universidad Nacional de Ingeniería">
+    <div class="titles">
+      <h1>RanchUNI — Catálogo de Vistas</h1>
+      <p>Mockups de referencia del sistema web de tickets de turno del comedor universitario</p>
+    </div>
+    <div class="meta">
+      <strong>Avance 2 — Diseño de interfaz</strong>
+      <span>Versión 0.2 · 19/04/2026</span>
+    </div>
+  </header>
+
+  <!-- ============================================================
+       SECCIÓN 1: ACCESO (LANDING · REGISTRO · LOGIN)
+       ============================================================ -->
+  <h2 class="section-title">Acceso<span>3 pantallas móviles · landing, registro y autenticación</span></h2>
+
+  <div class="grid-mobile">
+
+    <!-- ======== PANTALLA 1: LANDING ======== -->
+    <div class="screen-card">
+      <div class="screen-label">
+        <h3>1. Bienvenida (landing)</h3>
+        <p>Primera pantalla al abrir la app. Dos acciones claras: iniciar sesión o crear cuenta.</p>
+      </div>
+      <div class="mobile-frame">
+        <div class="mobile-screen">
+          <div class="mobile-notch"></div>
+          <div class="m-statusbar"><span>9:41</span><span>📶 🔋</span></div>
+          <div class="landing-hero">
+            <div class="landing-logo"><img src="assets/uni-logo.png" alt=""></div>
+            <div class="landing-title">Ranch<span class="accent">UNI</span></div>
+            <div class="landing-sub">Tu turno en el comedor universitario, sin colas físicas.</div>
+          </div>
+          <div class="landing-buttons">
+            <button class="btn btn-primary">Iniciar sesión</button>
+            <button class="btn btn-secondary">Crear cuenta</button>
+          </div>
+          <div class="landing-footnote">
+            Universidad Nacional de Ingeniería · 2026
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======== PANTALLA 2: REGISTRO ======== -->
+    <div class="screen-card">
+      <div class="screen-label">
+        <h3>2. Registro inicial</h3>
+        <p>Alta de cuenta con validación cruzada de DNI, código de alumno y correo UNI.</p>
+      </div>
+      <div class="mobile-frame">
+        <div class="mobile-screen">
+          <div class="mobile-notch"></div>
+          <div class="m-statusbar"><span>9:41</span><span>📶 🔋</span></div>
+          <div class="m-header">
+            <img src="assets/uni-logo.png" alt="">
+            <div><div class="brand">RanchUNI</div><div class="sub">Crear cuenta</div></div>
+          </div>
+          <div class="m-body">
+            <div class="reg-hero">
+              <h2>Crear cuenta</h2>
+              <p>Completa tus datos como alumno UNI</p>
+            </div>
+            <div>
+              <label class="input-label">Código de alumno</label>
+              <input class="input" type="text" value="20255009" placeholder="8 dígitos">
+            </div>
+            <div>
+              <label class="input-label">Nombres y apellidos</label>
+              <input class="input" type="text" value="Raul Antonio Guzmán López">
+            </div>
+            <div>
+              <label class="input-label">DNI</label>
+              <input class="input" type="text" value="76543210" placeholder="8 dígitos">
+            </div>
+            <div>
+              <label class="input-label">Correo UNI</label>
+              <input class="input" type="text" value="raul.guzman.l@uni.pe">
+            </div>
+            <div>
+              <label class="input-label">Facultad</label>
+              <input class="input" type="text" value="Ingeniería de Sistemas">
+            </div>
+            <div style="background: #DBEAFE; color: #1E40AF; padding: 10px 12px; border-radius: 8px; font-size: 11px; line-height: 1.5;">
+              <strong>Código único:</strong> cada código de alumno solo puede registrarse una vez. Si alguien ya registró el tuyo, envíanos una solicitud de suplantación.
+            </div>
+          </div>
+          <div class="m-footer">
+            <button class="btn btn-primary">Enviar enlace de verificación</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======== PANTALLA 3: LOGIN ======== -->
+    <div class="screen-card">
+      <div class="screen-label">
+        <h3>3. Login (PIN + OTP)</h3>
+        <p>Autenticación 2FA. Paso 2 de 3: ingreso del PIN de seis dígitos.</p>
+      </div>
+      <div class="mobile-frame">
+        <div class="mobile-screen">
+          <div class="mobile-notch"></div>
+          <div class="m-statusbar"><span>9:41</span><span>📶 🔋</span></div>
+          <div class="login-hero">
+            <img src="assets/uni-logo.png" alt="">
+            <h2>RanchUNI</h2>
+            <p>DNI 76******10 · Paso 2 de 3</p>
+          </div>
+          <div class="login-card">
+            <h3>Ingresa tu PIN</h3>
+            <div class="pin-dots">
+              <div class="dot filled"></div>
+              <div class="dot filled"></div>
+              <div class="dot filled"></div>
+              <div class="dot filled"></div>
+              <div class="dot"></div>
+              <div class="dot"></div>
+            </div>
+            <div class="numpad">
+              <button>1</button><button>2</button><button>3</button>
+              <button>4</button><button>5</button><button>6</button>
+              <button>7</button><button>8</button><button>9</button>
+              <button class="fingerprint">◉</button>
+              <button>0</button>
+              <button class="clear">⌫</button>
+            </div>
+          </div>
+          <div class="m-body" style="padding-top: 18px; flex: 0;">
+            <p style="text-align:center; font-size:12px; color: var(--texto-muted);">¿Olvidaste tu PIN?</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============================================================
+       SECCIÓN 2: HOME Y RESERVA
+       ============================================================ -->
+  <h2 class="section-title">Home y reserva<span>3 pantallas móviles · menú principal + flujo de reserva</span></h2>
+
+  <div class="grid-mobile">
+
+    <!-- ======== PANTALLA 4: HOME ALUMNO ======== -->
+    <div class="screen-card">
+      <div class="screen-label">
+        <h3>4. Home del alumno</h3>
+        <p>Menú principal tras autenticar. CTA grande de reserva + grilla de accesos.</p>
+      </div>
+      <div class="mobile-frame">
+        <div class="mobile-screen">
+          <div class="mobile-notch"></div>
+          <div class="m-statusbar"><span>9:41</span><span>📶 🔋</span></div>
+          <div class="home-topbar">
+            <div class="avatar-sm">RG</div>
+            <div class="greet">
+              Hola,
+              <strong>Raul</strong>
+            </div>
+            <div class="bell">🔔</div>
+          </div>
+
+          <div class="home-cta">
+            <div class="icon-cta">🍽️</div>
+            <div>
+              <div class="label">Reservar ahora</div>
+              <div class="value">Almuerzo · hoy</div>
+              <div class="sub">Ventana abierta · cierra a las 11:00</div>
+            </div>
+            <div class="arrow">›</div>
+          </div>
+
+          <div class="m-body" style="padding-top: 16px;">
+            <div class="home-section-title">Mi cuenta</div>
+            <div class="home-grid">
+              <div class="home-tile">
+                <div class="tile-icon c2">▮▮▮</div>
+                <div class="tile-label">Mi código</div>
+              </div>
+              <div class="home-tile">
+                <div class="tile-icon c3">👤</div>
+                <div class="tile-label">Mis datos</div>
+              </div>
+              <div class="home-tile">
+                <div class="tile-icon c4">⚠</div>
+                <div class="tile-label">Sanciones</div>
+              </div>
+              <div class="home-tile">
+                <div class="tile-icon c5">📩</div>
+                <div class="tile-label">Solicitudes</div>
+              </div>
+              <div class="home-tile">
+                <div class="tile-icon c1">↩</div>
+                <div class="tile-label">Cerrar sesión</div>
+              </div>
+              <div class="home-tile">
+                <div class="tile-icon c6">🗑</div>
+                <div class="tile-label">Eliminar cuenta</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======== PANTALLA 5: COLA VIRTUAL ======== -->
+    <div class="screen-card">
+      <div class="screen-label">
+        <h3>5. Sala de espera virtual</h3>
+        <p>Posición en cola, progreso y heartbeat activo (evita abandono silencioso).</p>
+      </div>
+      <div class="mobile-frame">
+        <div class="mobile-screen">
+          <div class="mobile-notch"></div>
+          <div class="m-statusbar"><span>9:41</span><span>📶 🔋</span></div>
+          <div class="m-header">
+            <img src="assets/uni-logo.png" alt="">
+            <div><div class="brand">RanchUNI</div><div class="sub">Almuerzo · 19/04/2026</div></div>
+          </div>
+          <div class="m-body" style="justify-content:center; gap: 20px;">
+            <div class="cola-big">
+              <div class="cola-label">Tu posición</div>
+              <div class="cola-num"><span class="cola-prefix">#</span>47</div>
+              <div style="color: var(--texto-secundario); font-size: 13px; margin-top: 8px;">
+                <strong style="color: var(--texto); font-weight: 700;">123</strong> personas delante de ti
+              </div>
+            </div>
+            <div class="card">
+              <div style="font-size:12px; color: var(--texto-secundario); text-align:center;">Tiempo estimado</div>
+              <div style="font-size:28px; font-weight:700; color: var(--granate); text-align:center; margin: 4px 0 8px;">≈ 2 min</div>
+              <div class="progress"><div class="progress-fill"></div></div>
+              <div class="heartbeat-row" style="margin-top: 10px;">
+                <div class="heartbeat-dot"></div>
+                <span>Conexión activa</span>
+              </div>
+            </div>
+            <div style="font-size: 11px; color: var(--texto-muted); text-align: center; padding: 8px 20px; line-height: 1.5;">
+              Mantén esta pantalla abierta. Si la cierras por más de 2 minutos perderás tu posición en la cola.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======== PANTALLA 6: SELECCIÓN DE TURNO ======== -->
+    <div class="screen-card">
+      <div class="screen-label">
+        <h3>6. Selección de turno</h3>
+        <p>Turnos disponibles con cupos visibles. Cronómetro de 5 min arriba.</p>
+      </div>
+      <div class="mobile-frame">
+        <div class="mobile-screen">
+          <div class="mobile-notch"></div>
+          <div class="m-statusbar"><span>9:41</span><span>📶 🔋</span></div>
+          <div class="m-header">
+            <img src="assets/uni-logo.png" alt="">
+            <div><div class="brand">RanchUNI</div><div class="sub">Elige tu turno</div></div>
+          </div>
+          <div class="timer-banner">
+            ⏱ Tienes <strong>4:32</strong> para confirmar tu reserva
+          </div>
+          <div class="m-body">
+            <div class="tabs">
+              <div class="tab active">Almuerzo</div>
+              <div class="tab">Cena</div>
+            </div>
+
+            <div class="turno-item full">
+              <div>
+                <div class="turno-hora">11:30</div>
+                <div class="turno-meta">Sin cupos</div>
+              </div>
+              <span class="badge badge-error">LLENO</span>
+            </div>
+
+            <div class="turno-item">
+              <div>
+                <div class="turno-hora">12:00</div>
+                <div class="turno-meta">32 / 50 cupos</div>
+                <div class="cupos-bar"><div class="cupos-fill" style="width:64%; background: var(--dorado);"></div></div>
+              </div>
+              <span class="badge badge-warning">QUEDAN 18</span>
+            </div>
+
+            <div class="turno-item selected">
+              <div>
+                <div class="turno-hora">12:30</div>
+                <div class="turno-meta">12 / 50 cupos</div>
+                <div class="cupos-bar"><div class="cupos-fill" style="width:24%; background: var(--exito);"></div></div>
+              </div>
+              <span class="badge badge-success">DISPONIBLE</span>
+            </div>
+
+            <div class="turno-item">
+              <div>
+                <div class="turno-hora">13:00</div>
+                <div class="turno-meta">5 / 50 cupos</div>
+                <div class="cupos-bar"><div class="cupos-fill" style="width:10%; background: var(--exito);"></div></div>
+              </div>
+              <span class="badge badge-success">DISPONIBLE</span>
+            </div>
+          </div>
+          <div class="m-footer">
+            <button class="btn btn-primary">Confirmar reserva · 12:30</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============================================================
+       SECCIÓN 3: CONFIRMACIÓN Y GESTIÓN DE CUENTA
+       ============================================================ -->
+  <h2 class="section-title">Confirmación y gestión<span>5 pantallas móviles · reserva confirmada + módulos del alumno</span></h2>
+
+  <div class="grid-mobile">
+
+    <!-- ======== PANTALLA 7: CONFIRMACIÓN (con barcode alumno) ======== -->
+    <div class="screen-card">
+      <div class="screen-label">
+        <h3>7. Confirmación de reserva</h3>
+        <p>Resultado tras reserva atómica. El código de barras muestra el código de alumno para validación en el comedor.</p>
+      </div>
+      <div class="mobile-frame">
+        <div class="mobile-screen">
+          <div class="mobile-notch"></div>
+          <div class="m-statusbar"><span>9:41</span><span>📶 🔋</span></div>
+          <div class="m-body" style="padding: 0; gap: 0;">
+            <div class="conf-wrap">
+              <div class="check-circle">✓</div>
+              <h2>¡Reserva confirmada!</h2>
+              <p>Llega al comedor 10 min antes de tu turno.</p>
+            </div>
+
+            <div class="card" style="margin: 0 20px 14px;">
+              <div class="detail-row"><span class="k">Servicio</span><span class="v">Almuerzo</span></div>
+              <div class="detail-row"><span class="k">Fecha</span><span class="v">19 abril 2026</span></div>
+              <div class="detail-row"><span class="k">Turno</span><span class="v">12:30 – 13:00</span></div>
+              <div class="detail-row"><span class="k">Ticket</span><span class="v" style="font-family: monospace; letter-spacing: 2px;">RA-7K3M</span></div>
+            </div>
+
+            <div class="barcode-wrap" style="margin: 0 20px 10px;">
+              <div class="bc-label">Tu código de alumno</div>
+              <div class="barcode">
+                <i class="bc-thick"></i><i class="bc-space-w"></i>
+                <i class="bc-thin"></i><i class="bc-space-s"></i><i class="bc-mid"></i><i class="bc-space-w"></i>
+                <i class="bc-thick"></i><i class="bc-space-s"></i><i class="bc-thin"></i><i class="bc-space-w"></i>
+                <i class="bc-mid"></i><i class="bc-space-s"></i><i class="bc-thick"></i><i class="bc-space-w"></i>
+                <i class="bc-thin"></i><i class="bc-space-s"></i><i class="bc-thin"></i><i class="bc-space-w"></i>
+                <i class="bc-mid"></i><i class="bc-space-w"></i>
+                <i class="bc-thick"></i><i class="bc-space-s"></i><i class="bc-mid"></i><i class="bc-space-w"></i>
+                <i class="bc-thin"></i><i class="bc-space-s"></i><i class="bc-thick"></i><i class="bc-space-w"></i>
+                <i class="bc-mid"></i><i class="bc-space-s"></i><i class="bc-thin"></i><i class="bc-space-w"></i>
+                <i class="bc-thick"></i><i class="bc-space-w"></i>
+                <i class="bc-thin"></i><i class="bc-space-s"></i><i class="bc-mid"></i>
+              </div>
+              <div class="barcode-digits">20255009</div>
+              <div class="barcode-caption">Muestra este código al operador del comedor</div>
+            </div>
+          </div>
+          <div class="m-footer">
+            <button class="btn btn-primary" style="margin-bottom: 8px;">Volver al inicio</button>
+            <button class="btn btn-outline-danger">Cancelar reserva</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======== PANTALLA 8: MI CÓDIGO (standalone) ======== -->
+    <div class="screen-card">
+      <div class="screen-label">
+        <h3>8. Mi código de alumno</h3>
+        <p>Acceso rápido desde el home. Alternativa digital al carnet SUNEDU.</p>
+      </div>
+      <div class="mobile-frame">
+        <div class="mobile-screen">
+          <div class="mobile-notch"></div>
+          <div class="m-statusbar"><span>9:41</span><span>📶 🔋</span></div>
+          <div class="m-header">
+            <img src="assets/uni-logo.png" alt="">
+            <div><div class="brand">Mi código</div><div class="sub">Válido en el comedor</div></div>
+          </div>
+          <div class="m-body" style="justify-content: center;">
+            <div class="mycode-card">
+              <div style="font-size: 10px; color: var(--texto-muted); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; margin-bottom: 12px;">Código de alumno UNI</div>
+              <div class="barcode barcode-big">
+                <i class="bc-thick"></i><i class="bc-space-w"></i>
+                <i class="bc-thin"></i><i class="bc-space-s"></i><i class="bc-mid"></i><i class="bc-space-w"></i>
+                <i class="bc-thick"></i><i class="bc-space-s"></i><i class="bc-thin"></i><i class="bc-space-w"></i>
+                <i class="bc-mid"></i><i class="bc-space-s"></i><i class="bc-thick"></i><i class="bc-space-w"></i>
+                <i class="bc-thin"></i><i class="bc-space-s"></i><i class="bc-thin"></i><i class="bc-space-w"></i>
+                <i class="bc-mid"></i><i class="bc-space-w"></i>
+                <i class="bc-thick"></i><i class="bc-space-s"></i><i class="bc-mid"></i><i class="bc-space-w"></i>
+                <i class="bc-thin"></i><i class="bc-space-s"></i><i class="bc-thick"></i><i class="bc-space-w"></i>
+                <i class="bc-mid"></i><i class="bc-space-s"></i><i class="bc-thin"></i><i class="bc-space-w"></i>
+                <i class="bc-thick"></i>
+              </div>
+              <div class="barcode-digits" style="font-size: 22px; letter-spacing: 8px; margin-top: 10px;">20255009</div>
+              <hr style="margin: 18px 0; border: none; border-top: 1px dashed var(--borde);">
+              <div class="name">Raul Antonio Guzmán López</div>
+              <div class="fac">Ingeniería de Sistemas · FIIS</div>
+            </div>
+            <div class="mycode-note">
+              El operador del comedor puede escanear este código o ingresarlo manualmente.
+            </div>
+          </div>
+          <div class="m-footer">
+            <button class="btn btn-secondary">Volver al menú</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======== PANTALLA 9: MIS DATOS ======== -->
+    <div class="screen-card">
+      <div class="screen-label">
+        <h3>9. Mis datos</h3>
+        <p>Perfil del alumno. Campos editables (correo UNI, facultad) y datos bloqueados (DNI, código).</p>
+      </div>
+      <div class="mobile-frame">
+        <div class="mobile-screen">
+          <div class="mobile-notch"></div>
+          <div class="m-statusbar"><span>9:41</span><span>📶 🔋</span></div>
+          <div class="m-header">
+            <img src="assets/uni-logo.png" alt="">
+            <div><div class="brand">Mis datos</div><div class="sub">Perfil del alumno</div></div>
+          </div>
+          <div class="m-body">
+            <div class="datos-sec-title">Datos verificados</div>
+            <div>
+              <label class="input-label">Código de alumno 🔒</label>
+              <input class="input" type="text" value="20255009" readonly>
+            </div>
+            <div>
+              <label class="input-label">DNI 🔒</label>
+              <input class="input" type="text" value="76543210" readonly>
+            </div>
+            <div>
+              <label class="input-label">Nombres completos 🔒</label>
+              <input class="input" type="text" value="Raul Antonio Guzmán López" readonly>
+            </div>
+
+            <div class="datos-sec-title" style="margin-top: 10px;">Datos editables</div>
+            <div>
+              <label class="input-label">Correo UNI</label>
+              <input class="input" type="text" value="raul.guzman.l@uni.pe">
+            </div>
+            <div>
+              <label class="input-label">Facultad</label>
+              <input class="input" type="text" value="Ingeniería de Sistemas">
+            </div>
+            <div>
+              <label class="input-label">Cambiar PIN</label>
+              <input class="input" type="password" value="••••••" placeholder="Ingresa tu nuevo PIN">
+            </div>
+          </div>
+          <div class="m-footer">
+            <button class="btn btn-primary">Guardar cambios</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======== PANTALLA 10: SANCIONES ======== -->
+    <div class="screen-card">
+      <div class="screen-label">
+        <h3>10. Sanciones</h3>
+        <p>Inasistencias acumuladas en ventana deslizante de 30 días y umbrales activos.</p>
+      </div>
+      <div class="mobile-frame">
+        <div class="mobile-screen">
+          <div class="mobile-notch"></div>
+          <div class="m-statusbar"><span>9:41</span><span>📶 🔋</span></div>
+          <div class="m-header">
+            <img src="assets/uni-logo.png" alt="">
+            <div><div class="brand">Sanciones</div><div class="sub">Ventana de 30 días</div></div>
+          </div>
+          <div class="m-body">
+            <div class="sanc-hero">
+              <div class="big-count">2<small>/3</small></div>
+              <div class="label-count">Inasistencias</div>
+              <div class="sanc-progress">
+                <div class="p-dot warn"></div>
+                <div class="p-dot warn"></div>
+                <div class="p-dot"></div>
+              </div>
+              <div class="sanc-threshold">Una más y serás suspendido <strong>7 días</strong></div>
+            </div>
+
+            <div class="sanc-list-title">Inasistencias registradas</div>
+
+            <div class="sanc-item">
+              <div>
+                <div class="fecha">17 abril · Cena 19:00</div>
+                <div class="det">Ticket RA-5H8N · no validado</div>
+              </div>
+              <span class="badge badge-error">NO ASISTIÓ</span>
+            </div>
+
+            <div class="sanc-item">
+              <div>
+                <div class="fecha">11 abril · Almuerzo 13:00</div>
+                <div class="det">Ticket RA-1Y4B · no validado</div>
+              </div>
+              <span class="badge badge-error">NO ASISTIÓ</span>
+            </div>
+
+            <div class="card" style="padding: 12px 14px; font-size: 11px; color: var(--texto-secundario); line-height: 1.5;">
+              <strong style="color: var(--texto); font-size: 12px;">Política</strong><br>
+              2 faltas → advertencia · 3 faltas → suspensión 7 días · 5 faltas → suspensión hasta solicitud manual.
+            </div>
+          </div>
+          <div class="m-footer">
+            <button class="btn btn-secondary">Disputar una inasistencia</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======== PANTALLA 11: SOLICITUDES ======== -->
+    <div class="screen-card">
+      <div class="screen-label">
+        <h3>11. Solicitudes</h3>
+        <p>Canal del alumno hacia admin: suplantación, levantamiento de sanción, anulación de no-show. Solo pendientes.</p>
+      </div>
+      <div class="mobile-frame">
+        <div class="mobile-screen">
+          <div class="mobile-notch"></div>
+          <div class="m-statusbar"><span>9:41</span><span>📶 🔋</span></div>
+          <div class="m-header">
+            <img src="assets/uni-logo.png" alt="">
+            <div><div class="brand">Solicitudes</div><div class="sub">Pendientes</div></div>
+          </div>
+          <div class="m-body">
+            <div class="req-types-title">Solicitudes en curso</div>
+
+            <div class="req-item tipo-supl">
+              <div class="req-icon">⚠</div>
+              <div style="flex: 1;">
+                <div class="titulo">Suplantación de código</div>
+                <div class="sub">Código 20255009 · DNI 76543210</div>
+                <div class="fecha-env">Enviada el 18 abr · hace 1 día</div>
+              </div>
+              <div class="right">
+                <span class="badge badge-warning">EN REVISIÓN</span>
+              </div>
+            </div>
+
+            <div class="req-item tipo-nosh">
+              <div class="req-icon">↺</div>
+              <div style="flex: 1;">
+                <div class="titulo">Anulación de no-show</div>
+                <div class="sub">17 abril · Cena 19:00 · RA-5H8N</div>
+                <div class="fecha-env">Enviada hoy · hace 3 h</div>
+              </div>
+              <div class="right">
+                <span class="badge badge-info">RECIBIDA</span>
+              </div>
+            </div>
+
+            <div class="req-types-title" style="margin-top: 8px;">Nueva solicitud</div>
+
+            <div class="req-item tipo-supl" style="cursor: pointer;">
+              <div class="req-icon">🛡</div>
+              <div style="flex: 1;">
+                <div class="titulo">Suplantación de código</div>
+                <div class="sub">Alguien ya registró tu código UNI.</div>
+              </div>
+              <div class="right" style="color: var(--granate); font-size: 20px; font-weight: 700;">›</div>
+            </div>
+
+            <div class="req-item tipo-sanc" style="cursor: pointer;">
+              <div class="req-icon">♻</div>
+              <div style="flex: 1;">
+                <div class="titulo">Levantamiento de sanción</div>
+                <div class="sub">Para 5 faltas acumuladas.</div>
+              </div>
+              <div class="right" style="color: var(--granate); font-size: 20px; font-weight: 700;">›</div>
+            </div>
+
+            <div class="req-item tipo-nosh" style="cursor: pointer;">
+              <div class="req-icon">↺</div>
+              <div style="flex: 1;">
+                <div class="titulo">Anulación de no-show</div>
+                <div class="sub">Disputar una inasistencia con motivo.</div>
+              </div>
+              <div class="right" style="color: var(--granate); font-size: 20px; font-weight: 700;">›</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============================================================
+       SECCIÓN 4: STAFF (OPERADOR · ADMIN)
+       ============================================================ -->
+  <h2 class="section-title">Panel del staff<span>2 pantallas desktop · operador del comedor + administrador</span></h2>
+
+  <div class="grid-desktop">
+
+    <!-- ======== PANTALLA 12: PANEL OPERADOR ======== -->
+    <div class="screen-card" style="align-items: stretch;">
+      <div class="screen-label">
+        <h3>12. Panel del operador</h3>
+        <p>Validación de tickets por carnet SUNEDU o ingreso manual. Muestra el último alumno atendido.</p>
+      </div>
+      <div class="desktop-frame">
+        <div class="desktop-screen">
+          <div style="display: flex; flex-direction: column; width: 100%;">
+            <div class="d-header">
+              <img src="assets/uni-logo.png" alt="">
+              <h1>RanchUNI · Panel Operador</h1>
+              <div class="meta">
+                <div>Turno actual: <strong>12:30</strong></div>
+                <div>Atendidos: <strong>18</strong> / 50</div>
+                <span class="pill">ALMUERZO · EN VIVO</span>
+              </div>
+            </div>
+            <div class="op-body">
+              <div class="op-scan">
+                <h2>Escanear carnet</h2>
+                <div class="input-big">ESPERANDO LECTURA…</div>
+                <p class="helper">Escanea el código de barras del carnet SUNEDU o ingresa manualmente abajo:</p>
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
+                  <input class="input" placeholder="Código de alumno o DNI">
+                  <button class="btn btn-primary">Buscar</button>
+                </div>
+              </div>
+              <div class="op-result">
+                <div class="student">
+                  <div class="avatar">RG</div>
+                  <div>
+                    <h3>Raul Antonio Guzmán López</h3>
+                    <p>20255009 · Ingeniería de Sistemas</p>
+                    <span class="badge badge-success" style="margin-top: 4px;">TICKET VÁLIDO · ALMUERZO 12:30</span>
+                  </div>
+                </div>
+                <div class="grid-kv">
+                  <div><div class="k">Ticket</div><div class="v" style="font-family: monospace;">RA-7K3M</div></div>
+                  <div><div class="k">Estado</div><div class="v" style="color: var(--exito);">VÁLIDO</div></div>
+                  <div><div class="k">Turno</div><div class="v">12:30 – 13:00</div></div>
+                  <div><div class="k">Reservado</div><div class="v">Hoy 06:24</div></div>
+                </div>
+                <button class="btn btn-primary" style="margin-top: 14px;">Marcar como consumido</button>
+              </div>
+              <div class="op-table">
+                <h2>Últimas validaciones</h2>
+                <table>
+                  <thead>
+                    <tr><th>Hora</th><th>Código</th><th>Nombre</th><th>Ticket</th><th>Resultado</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>12:31</td><td>20255009</td><td>Guzmán López, Raul</td><td>RA-7K3M</td><td><span class="badge badge-success">CONSUMIDO</span></td></tr>
+                    <tr><td>12:30</td><td>20241123</td><td>Luna Roca, Fabrizio</td><td>RA-7J2P</td><td><span class="badge badge-success">CONSUMIDO</span></td></tr>
+                    <tr><td>12:30</td><td>20241088</td><td>Quichca Letona, Luis</td><td>RA-7H1N</td><td><span class="badge badge-error">SIN RESERVA</span></td></tr>
+                    <tr><td>12:29</td><td>20241215</td><td>Morales Quispe, Rodrigo</td><td>RA-7G9K</td><td><span class="badge badge-success">CONSUMIDO</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======== PANTALLA 13: DASHBOARD ADMIN ======== -->
+    <div class="screen-card" style="align-items: stretch;">
+      <div class="screen-label">
+        <h3>13. Dashboard del administrador</h3>
+        <p>Métricas operativas y configuración dinámica de turnos. Gestión de solicitudes y sanciones.</p>
+      </div>
+      <div class="desktop-frame">
+        <div class="desktop-screen">
+          <div class="admin-layout">
+            <aside class="admin-side">
+              <div class="brand">
+                <img src="assets/uni-logo.png" alt="">
+                <span>RanchUNI</span>
+              </div>
+              <nav>
+                <a class="active">▣ Panel</a>
+                <a>⚙ Configuración</a>
+                <a>🎫 Tickets</a>
+                <a>👥 Alumnos</a>
+                <a>🚫 Sanciones</a>
+                <a>📩 Solicitudes</a>
+                <a>📊 Reportes</a>
+                <a>📝 Auditoría</a>
+              </nav>
+            </aside>
+            <main class="admin-main">
+              <div class="admin-topbar">
+                <div>
+                  <h1>Panel de control</h1>
+                  <p>Resumen del servicio de almuerzo · 19 abril 2026</p>
+                </div>
+                <div style="font-size: 12px; color: var(--texto-secundario);">
+                  Admin · <strong style="color: var(--granate);">Rodrigo Morales</strong>
+                </div>
+              </div>
+
+              <div class="kpi-grid">
+                <div class="kpi">
+                  <div class="lbl">Raciones emitidas</div>
+                  <div class="val">287</div>
+                  <div class="delta">↑ 12% vs. ayer</div>
+                </div>
+                <div class="kpi">
+                  <div class="lbl">Ocupación del día</div>
+                  <div class="val">96%</div>
+                  <div class="delta" style="color: var(--dorado);">288 de 300 cupos</div>
+                </div>
+                <div class="kpi">
+                  <div class="lbl">Consumidos</div>
+                  <div class="val">261</div>
+                  <div class="delta">↑ 91% de los reservados</div>
+                </div>
+                <div class="kpi">
+                  <div class="lbl">Solicitudes pendientes</div>
+                  <div class="val">14</div>
+                  <div class="delta" style="color: var(--alerta);">3 por suplantación</div>
+                </div>
+              </div>
+
+              <div class="chart-row">
+                <div class="chart-card">
+                  <h3>Demanda por turno (almuerzo)</h3>
+                  <div class="bar-chart">
+                    <div class="bar" style="height: 96%;" data-v="48" data-lbl="11:30"></div>
+                    <div class="bar" style="height: 100%;" data-v="50" data-lbl="12:00"></div>
+                    <div class="bar" style="height: 94%;" data-v="47" data-lbl="12:30"></div>
+                    <div class="bar" style="height: 76%;" data-v="38" data-lbl="13:00"></div>
+                    <div class="bar" style="height: 58%;" data-v="29" data-lbl="13:30"></div>
+                    <div class="bar" style="height: 46%;" data-v="23" data-lbl="14:00"></div>
+                  </div>
+                </div>
+                <div class="chart-card donut-card">
+                  <h3>Distribución del día</h3>
+                  <div class="donut">
+                    <div class="donut-center">
+                      <div class="big">96%</div>
+                      <div class="sml">ocupación</div>
+                    </div>
+                  </div>
+                  <div class="legend">
+                    <div><div class="sq" style="background: var(--granate);"></div>Consumidos · 72%</div>
+                    <div><div class="sq" style="background: var(--dorado);"></div>Cancelados · 16%</div>
+                    <div><div class="sq" style="background: var(--error);"></div>No asistidos · 12%</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="cfg-table">
+                <div class="hdr">
+                  <h3>Configuración de turnos · Almuerzo</h3>
+                  <button class="btn-add">+ Añadir turno</button>
+                </div>
+                <table>
+                  <thead>
+                    <tr><th>Turno</th><th>Inicio</th><th>Fin</th><th>Cupo máx.</th><th>Reservados</th><th>Estado</th><th></th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>#1</td><td>11:30</td><td>12:00</td><td><input type="number" value="50"></td><td>48</td><td><span class="badge badge-success">ACTIVO</span></td><td style="color: var(--granate); font-weight: 600; cursor: pointer;">Editar</td></tr>
+                    <tr><td>#2</td><td>12:00</td><td>12:30</td><td><input type="number" value="50"></td><td>50</td><td><span class="badge badge-error">LLENO</span></td><td style="color: var(--granate); font-weight: 600; cursor: pointer;">Editar</td></tr>
+                    <tr><td>#3</td><td>12:30</td><td>13:00</td><td><input type="number" value="50"></td><td>47</td><td><span class="badge badge-success">ACTIVO</span></td><td style="color: var(--granate); font-weight: 600; cursor: pointer;">Editar</td></tr>
+                    <tr><td>#4</td><td>13:00</td><td>13:30</td><td><input type="number" value="50"></td><td>38</td><td><span class="badge badge-success">ACTIVO</span></td><td style="color: var(--granate); font-weight: 600; cursor: pointer;">Editar</td></tr>
+                    <tr><td>#5</td><td>13:30</td><td>14:00</td><td><input type="number" value="50"></td><td>29</td><td><span class="badge badge-success">ACTIVO</span></td><td style="color: var(--granate); font-weight: 600; cursor: pointer;">Editar</td></tr>
+                    <tr><td>#6</td><td>14:00</td><td>14:30</td><td><input type="number" value="50"></td><td>23</td><td><span class="badge badge-success">ACTIVO</span></td><td style="color: var(--granate); font-weight: 600; cursor: pointer;">Editar</td></tr>
+                  </tbody>
+                </table>
+                <p style="font-size: 11px; color: var(--texto-muted); margin-top: 12px;">
+                  Cambios toman efecto al siguiente ciclo. Apertura de reservas: <strong style="color: var(--texto);">06:00</strong> (almuerzo) · <strong style="color: var(--texto);">14:00</strong> (cena) · editable.
+                </p>
+              </div>
+            </main>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============================================================
+       FOOTER DEL CATÁLOGO
+       ============================================================ -->
+  <footer class="catalog-footer">
+    <strong>RanchUNI</strong> · Sistema web de gestión y emisión de tickets de turno para el comedor de la Universidad Nacional de Ingeniería.<br>
+    Monografía 1 — HU501-U · Taller de Efectividad Personal · Ciclo 26-1 · Paleta institucional UNI + acentos dorados.
+  </footer>
+</div>
+
+</body>
+</html>
