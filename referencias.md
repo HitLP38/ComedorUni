@@ -6,7 +6,15 @@ Listado consolidado de las referencias utilizadas en la monografía, en formato 
 
 Bonér, J., Farley, D., Kuhn, R., & Thompson, M. (2014). *The reactive manifesto*. https://www.reactivemanifesto.org/
 
+Booch, G., Rumbaugh, J., & Jacobson, I. (2005). *The unified modeling language user guide* (2nd ed.). Addison-Wesley.
+
+Chen, P. P.-S. (1976). The entity-relationship model—Toward a unified view of data. *ACM Transactions on Database Systems*, *1*(1), 9–36. https://doi.org/10.1145/320434.320440
+
+Cockburn, A. (2001). *Writing effective use cases*. Addison-Wesley.
+
 Dijkstra, E. W. (1965). Solution of a problem in concurrent programming control. *Communications of the ACM*, *8*(9), 569. https://doi.org/10.1145/365559.365617
+
+Fowler, M. (2003). *Patterns of enterprise application architecture*. Addison-Wesley.
 
 Fredman, M. L., & Tarjan, R. E. (1987). Fibonacci heaps and their uses in improved network optimization algorithms. *Journal of the ACM*, *34*(3), 596–615. https://doi.org/10.1145/28869.28874
 
@@ -24,9 +32,15 @@ Kendall, D. G. (1953). Stochastic processes occurring in the theory of queues an
 
 Knuth, D. E. (1998). *The art of computer programming, volume 3: Sorting and searching* (2nd ed.). Addison-Wesley.
 
+Krug, S. (2014). *Don't make me think, revisited: A common sense approach to web usability* (3rd ed.). New Riders.
+
 Microsoft Corporation. (2023). *Queue-based load leveling pattern*. Microsoft Azure Architecture Center. https://learn.microsoft.com/en-us/azure/architecture/patterns/queue-based-load-leveling
 
 M'Raihi, D., Machani, S., Pei, M., & Rydell, J. (2011). *RFC 6238: TOTP: Time-based one-time password algorithm*. Internet Engineering Task Force. https://www.rfc-editor.org/rfc/rfc6238
+
+Nielsen, J. (1994). *Usability engineering*. Morgan Kaufmann.
+
+Norman, D. A. (2013). *The design of everyday things* (Rev. and expanded ed.). Basic Books.
 
 OWASP Foundation. (2021). *OWASP Top 10 — 2021*. https://owasp.org/Top10/
 
