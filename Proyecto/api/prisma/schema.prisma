@@ -19,6 +19,7 @@ model Alumno {
   correo_uni              String    @unique @db.VarChar(255)
   facultad                String    @db.VarChar(100)
   pin_hash                String    @db.VarChar(255)
+  correo_verificado       Boolean   @default(false)
   estado                  EstadoAlumno @default(ACTIVO)
   inasistencias_acumuladas Int       @default(0)
   fecha_suspension_hasta  DateTime?
