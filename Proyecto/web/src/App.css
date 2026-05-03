@@ -101,3 +101,48 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f0f4f8; colo
 /* ─── Error card ───────────────────────────────────── */
 .error-card { background: #fff5f5; border: 1.5px solid #feb2b2; border-radius: 10px; padding: 1.5rem; text-align: center; margin: 2rem auto; max-width: 400px; }
 .error-card p { margin-bottom: 1rem; color: #c53030; }
+
+/* ─── Operador Dashboard ───────────────────────────── */
+.turno-actual-card { background: #f0fff4; border: 1.5px solid #9ae6b4; border-radius: 8px; padding: .8rem 1rem; margin-bottom: 1.2rem; display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
+.turno-tag { background: #c6f6d5; color: #276749; padding: .2rem .6rem; border-radius: 999px; font-size: .875rem; }
+.validar-card { background: #fff; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 10px rgba(0,0,0,.08); }
+.validar-card h2 { margin-bottom: 1rem; }
+.mode-tabs { display: flex; gap: .5rem; margin-bottom: 1rem; }
+.mode-tab { background: #f7fafc; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: .4rem .8rem; cursor: pointer; font-size: .875rem; transition: all .2s; }
+.mode-tab.active { background: #ebf8ff; border-color: #3182ce; color: #2b6cb0; font-weight: 600; }
+.validar-form { display: flex; gap: .6rem; }
+.validar-form input { flex: 1; padding: .6rem .8rem; border: 1.5px solid #cbd5e0; border-radius: 8px; font-size: 1rem; }
+.validar-form input:focus { outline: none; border-color: #3182ce; }
+.validar-form .btn-primary { width: auto; padding: .6rem 1.2rem; }
+.validacion-ok { margin-top: 1rem; background: #f0fff4; border: 2px solid #68d391; border-radius: 10px; padding: 1rem; }
+.validacion-check { font-size: 1.1rem; font-weight: 700; color: #276749; margin-bottom: .5rem; }
+.alumno-info { display: flex; flex-direction: column; gap: .2rem; }
+.alumno-info strong { font-size: 1rem; }
+.alumno-info span { font-size: .875rem; color: #718096; }
+.ticket-mini { margin-top: .4rem; font-size: .875rem; color: #4a5568; }
+.validacion-error { margin-top: .8rem; background: #fff5f5; border: 1.5px solid #feb2b2; border-radius: 8px; padding: .8rem 1rem; color: #c53030; font-size: .9rem; }
+
+/* ─── Admin Dashboard ──────────────────────────────── */
+.admin-tabs { display: flex; gap: .5rem; margin-bottom: 1.5rem; border-bottom: 2px solid #e2e8f0; }
+.admin-tab { background: none; border: none; padding: .6rem 1rem; cursor: pointer; font-size: .95rem; color: #718096; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all .2s; }
+.admin-tab.active { color: #3182ce; border-bottom-color: #3182ce; font-weight: 600; }
+.admin-section { padding-top: .5rem; }
+.search-bar { display: flex; gap: .5rem; margin-bottom: .8rem; flex-wrap: wrap; }
+.search-bar input { flex: 1; padding: .5rem .8rem; border: 1.5px solid #cbd5e0; border-radius: 8px; min-width: 180px; }
+.search-bar select { padding: .5rem .8rem; border: 1.5px solid #cbd5e0; border-radius: 8px; background: #fff; }
+.admin-table { width: 100%; border-collapse: collapse; font-size: .875rem; }
+.admin-table th { text-align: left; padding: .6rem .8rem; background: #f7fafc; border-bottom: 2px solid #e2e8f0; font-weight: 600; color: #4a5568; }
+.admin-table td { padding: .6rem .8rem; border-bottom: 1px solid #f0f4f8; }
+.admin-table tr:hover td { background: #f7fafc; }
+.estado-mini { display: inline-block; padding: .15rem .5rem; border-radius: 4px; font-size: .8rem; font-weight: 600; }
+.estado-mini.estado-activo { background: #c6f6d5; color: #276749; }
+.estado-mini.estado-suspendido_7d { background: #fefcbf; color: #744210; }
+.estado-mini.estado-suspendido_manual { background: #fed7d7; color: #9b2c2c; }
+.tipo-sancion { background: #fefcbf; color: #744210; padding: .15rem .5rem; border-radius: 4px; font-size: .8rem; font-weight: 600; }
+.reporte-filters { display: flex; gap: .8rem; align-items: center; flex-wrap: wrap; margin-bottom: 1.5rem; }
+.reporte-filters label { display: flex; align-items: center; gap: .4rem; font-size: .875rem; font-weight: 600; }
+.reporte-filters input[type="date"] { padding: .4rem .6rem; border: 1.5px solid #cbd5e0; border-radius: 8px; }
+.reporte-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 1rem; }
+.reporte-card { background: #fff; border-radius: 10px; padding: 1rem; text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,.08); display: flex; flex-direction: column; gap: .4rem; }
+.reporte-card span { font-size: .8rem; color: #718096; }
+.reporte-card strong { font-size: 1.6rem; font-weight: 700; color: #2d3748; }
