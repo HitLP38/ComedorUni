@@ -2,6 +2,7 @@ import Fastify from 'fastify';
 import fastifyCors from '@fastify/cors';
 import fastifyHelmet from '@fastify/helmet';
 import { config } from './config/env.js';
+import { incrementCounter } from './modules/health/health.routes.js';
 import { buildErrorHandler } from './plugins/errorHandler.js';
 import { prismaPlugin } from './plugins/prismaPlugin.js';
 import { authPlugin } from './plugins/auth.js';
@@ -29,6 +30,8 @@ export async function buildApp(opts: { logger?: boolean } = {}) {
     methods: ['GET', 'POST', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   });
+
+  fastify.addHook('onRequest', async () => { incrementCounter('http_requests_total'); });
 
   fastify.setErrorHandler(buildErrorHandler());
   await fastify.register(prismaPlugin);

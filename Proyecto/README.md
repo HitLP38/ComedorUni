@@ -1,6 +1,6 @@
-# RanchUNI - Sistema de Gestión de Turnos de Comedor
+# RanchUNI — Sistema de Gestión de Turnos de Comedor v1.0.0
 
-Aplicación web de gestión y emisión de tickets de turno para el comedor universitario de la UNI.
+Aplicación web de gestión y emisión de tickets de turno para el comedor universitario (RanchUNI) de la UNI. Implementa cola virtual con Redis Sorted Set, autenticación 2FA (DNI + PIN + OTP) y panel de administración completo.
 
 **Curso**: Taller de Efectividad Personal (HU501-U)  
 **Docente**: Felipe Tsutomu Hiromoto Hiromoto  
@@ -241,15 +241,61 @@ npm run test:coverage
 
 ---
 
-## 📊 Próximos Pasos
+## Credenciales de prueba (seed demo)
 
-1. ✅ Setup inicial (COMPLETADO)
-2. Implementar handlers de autenticación (`POST /auth/login`, `POST /auth/otp`)
-3. Implementar servicios de cola virtual
-4. Crear componentes React (Landing, Login, Home, Queue)
-5. Implementar WebSocket para cola en tiempo real
-6. Pruebas de integración y E2E
-7. Deployment en producción
+| Rol      | Campo     | Valor           |
+|----------|-----------|-----------------|
+| Alumno 1 | DNI       | 12345671        |
+| Alumno 1 | PIN       | 246810          |
+| Alumno 2 | DNI       | 87654323        |
+| Alumno 2 | PIN       | 246810          |
+| Operador | username  | operador1       |
+| Operador | password  | Cambiar123!     |
+| Admin    | username  | admin           |
+| Admin    | password  | Admin12345!     |
+
+El OTP se envía al mock-mailer: `docker compose exec api ls /tmp/ranchuni-mails/`
+
+## Endpoints REST principales
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| POST | `/auth/registro` | Registrar alumno |
+| POST | `/auth/login` | Login (DNI+PIN) → OTP |
+| POST | `/auth/verificar-otp` | Completar 2FA |
+| GET | `/turnos` | Listar turnos del día |
+| POST | `/cola/entrar` | Entrar a la cola virtual |
+| WS | `/ws/cola` | Cola en tiempo real |
+| POST | `/reservas/hold` | Reservar cupo (60 s) |
+| POST | `/reservas/confirmar` | Confirmar ticket |
+| GET | `/reservas/mias` | Mis tickets |
+| POST | `/operador/login` | Login operador |
+| POST | `/operador/validar` | Validar ticket |
+| POST | `/admin/login` | Login admin |
+| GET | `/admin/alumnos` | Listar alumnos |
+| GET | `/admin/reportes/uso` | Métricas de uso |
+| GET | `/metrics` | Prometheus metrics |
+| GET | `/health` | Health check |
+
+## Tests
+
+```bash
+# Unitarios (60 tests)
+docker compose exec api npm test
+
+# Integración (26 tests — sin DB real necesaria)
+docker compose exec api npm run test:integration
+
+# E2E con Playwright (requiere app corriendo)
+cd web && npx playwright install chromium && npx playwright test
+```
+
+## Seed demo
+
+```bash
+# Siembra 10 alumnos ficticios + operador + admin
+docker compose exec api npm run db:seed:demo
+```
 
 ---
 
