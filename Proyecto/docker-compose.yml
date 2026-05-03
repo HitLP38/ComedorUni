@@ -72,6 +72,7 @@ services:
         condition: service_healthy
     volumes:
       - ./api/src:/app/src
+      - ./api/prisma:/app/prisma
     networks:
       - ranchuni_network
     command: npm run dev

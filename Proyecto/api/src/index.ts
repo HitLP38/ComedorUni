@@ -12,6 +12,7 @@ import { authRoutes } from './modules/auth/auth.routes.js';
 import { reservaRoutes } from './modules/reserva/reserva.routes.js';
 import { colaRoutes } from './modules/cola/cola.routes.js';
 import { adminRoutes } from './modules/admin/admin.routes.js';
+import { operadorRoutes } from './modules/operador/operador.routes.js';
 import { startColaWorker, startPubSubListener } from './modules/cola/cola.worker.js';
 
 async function build() {
@@ -51,6 +52,7 @@ async function build() {
   await fastify.register(authRoutes);
   await fastify.register(reservaRoutes);
   await fastify.register(colaRoutes);
+  await fastify.register(operadorRoutes);
   await fastify.register(adminRoutes);
 
   return fastify;

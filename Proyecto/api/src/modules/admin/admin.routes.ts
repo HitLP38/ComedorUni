@@ -18,7 +18,4 @@ export async function adminRoutes(fastify: FastifyInstance) {
   fastify.post('/admin/sanciones/:id/anular', stub as never);
   fastify.get('/admin/reportes/uso', stub as never);
   fastify.get('/admin/logs', stub as never);
-  fastify.post('/operador/login', stub as never);
-  fastify.post('/operador/logout', stub as never);
-  fastify.post('/operador/validar', stub as never);
 }
