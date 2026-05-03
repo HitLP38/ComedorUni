@@ -4,7 +4,7 @@ import fastifyHelmet from '@fastify/helmet';
 import { config } from './config/env.js';
 import { connectRedis, disconnectRedis } from './lib/redis.js';
 import { prisma } from './lib/prisma.js';
-import { errorHandlerPlugin } from './plugins/errorHandler.js';
+import { buildErrorHandler } from './plugins/errorHandler.js';
 import { prismaPlugin } from './plugins/prismaPlugin.js';
 import { authPlugin } from './plugins/auth.js';
 import { healthRoutes } from './modules/health/health.routes.js';
@@ -42,7 +42,7 @@ async function build() {
     allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
-  await fastify.register(errorHandlerPlugin);
+  fastify.setErrorHandler(buildErrorHandler());
   await fastify.register(prismaPlugin);
   await fastify.register(authPlugin);
 
