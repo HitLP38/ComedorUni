@@ -1,52 +1,31 @@
 import Fastify from 'fastify';
 import fastifyCors from '@fastify/cors';
 import fastifyHelmet from '@fastify/helmet';
-import { PrismaClient } from '@prisma/client';
-import { createClient } from 'redis';
+import { config } from './config/env.js';
+import { connectRedis, disconnectRedis } from './lib/redis.js';
+import { prisma } from './lib/prisma.js';
+import { errorHandlerPlugin } from './plugins/errorHandler.js';
+import { prismaPlugin } from './plugins/prismaPlugin.js';
+import { authPlugin } from './plugins/auth.js';
+import { healthRoutes } from './modules/health/health.routes.js';
+import { authRoutes } from './modules/auth/auth.routes.js';
+import { reservaRoutes } from './modules/reserva/reserva.routes.js';
+import { colaRoutes } from './modules/cola/cola.routes.js';
+import { adminRoutes } from './modules/admin/admin.routes.js';
 
-// ============================================
-// Configuración de Variantes de Entorno
-// ============================================
-const PORT = parseInt(process.env.API_PORT || '3001');
-const HOST = process.env.API_HOST || '0.0.0.0';
-const NODE_ENV = process.env.NODE_ENV || 'development';
-const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:5173';
-
-// ============================================
-// Inicialización de Dependencias Externas
-// ============================================
-const prisma = new PrismaClient({
-  log: NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-});
-
-const redisClient = createClient({
-  url: process.env.REDIS_URL || 'redis://localhost:6379',
-});
-
-// ============================================
-// Bootstrap de Aplicación Fastify
-// ============================================
-async function start() {
+async function build() {
   const fastify = Fastify({
     logger: {
-      level: NODE_ENV === 'development' ? 'debug' : 'info',
-      transport: NODE_ENV === 'development' ? {
-        target: 'pino-pretty',
-        options: { colorize: true }
-      } : undefined,
+      level: config.NODE_ENV === 'development' ? 'debug' : 'info',
+      ...(config.NODE_ENV === 'development' && {
+        transport: { target: 'pino-pretty', options: { colorize: true } },
+      }),
     },
     trustProxy: true,
-    bodyLimit: 1048576, // 1 MB
+    bodyLimit: 1_048_576,
   });
 
-  // ============================================
-  // Middleware de Seguridad Global
-  // ============================================
   await fastify.register(fastifyHelmet, {
-    strictTransportSecurity: {
-      maxAge: 31536000,
-      includeSubDomains: true,
-    },
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
@@ -54,133 +33,65 @@ async function start() {
         styleSrc: ["'self'", "'unsafe-inline'"],
       },
     },
-    frameguard: { action: 'deny' },
-    noSniff: true,
-    xssFilter: true,
   });
 
-  // ============================================
-  // Middleware de CORS
-  // ============================================
   await fastify.register(fastifyCors, {
-    origin: CORS_ORIGIN,
+    origin: config.CORS_ORIGIN,
     credentials: true,
     methods: ['GET', 'POST', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
-  // ============================================
-  // Conectar a Redis
-  // ============================================
+  await fastify.register(errorHandlerPlugin);
+  await fastify.register(prismaPlugin);
+  await fastify.register(authPlugin);
+
+  await fastify.register(healthRoutes);
+  await fastify.register(authRoutes);
+  await fastify.register(reservaRoutes);
+  await fastify.register(colaRoutes);
+  await fastify.register(adminRoutes);
+
+  return fastify;
+}
+
+async function start() {
+  const fastify = await build();
+
   try {
-    await redisClient.connect();
-    console.log('✓ Conectado a Redis');
-  } catch (error) {
-    console.error('✗ Error conectando a Redis:', error);
+    await connectRedis();
+    fastify.log.info('✓ Conectado a Redis');
+  } catch (err) {
+    fastify.log.error({ err }, '✗ Error conectando a Redis');
     process.exit(1);
   }
 
-  // ============================================
-  // Rutas de Healthcheck
-  // ============================================
-  fastify.get('/health', async (request, reply) => {
-    return {
-      status: 'ok',
-      timestamp: new Date().toISOString(),
-      environment: NODE_ENV,
-    };
-  });
-
-  fastify.get('/health/db', async (request, reply) => {
-    try {
-      await prisma.$queryRaw`SELECT 1`;
-      return {
-        status: 'ok',
-        database: 'postgresql',
-        timestamp: new Date().toISOString(),
-      };
-    } catch (error) {
-      reply.code(503);
-      return {
-        status: 'error',
-        database: 'postgresql',
-        error: 'Database connection failed',
-      };
-    }
-  });
-
-  fastify.get('/health/redis', async (request, reply) => {
-    try {
-      await redisClient.ping();
-      return {
-        status: 'ok',
-        cache: 'redis',
-        timestamp: new Date().toISOString(),
-      };
-    } catch (error) {
-      reply.code(503);
-      return {
-        status: 'error',
-        cache: 'redis',
-        error: 'Redis connection failed',
-      };
-    }
-  });
-
-  // ============================================
-  // Ruta de Prueba: Hello World
-  // ============================================
-  fastify.get('/', async (request, reply) => {
-    return {
-      message: 'Bienvenido a RanchUNI API',
-      version: '0.1.0',
-      endpoints: {
-        health: '/health',
-        database: '/health/db',
-        cache: '/health/redis',
-      },
-    };
-  });
-
-  // ============================================
-  // Gestión de Cierre Graceful
-  // ============================================
-  const signals = ['SIGTERM', 'SIGINT'];
+  const signals: NodeJS.Signals[] = ['SIGTERM', 'SIGINT'];
   signals.forEach((signal) => {
     process.on(signal, async () => {
-      console.log(`\n${signal} recibido. Cerrando gracefully...`);
-
+      fastify.log.info(`${signal} recibido. Cerrando gracefully...`);
       try {
         await fastify.close();
         await prisma.$disconnect();
-        await redisClient.quit();
-        console.log('✓ Aplicación cerrada correctamente');
+        await disconnectRedis();
+        fastify.log.info('✓ Aplicación cerrada correctamente');
         process.exit(0);
-      } catch (error) {
-        console.error('✗ Error durante cierre:', error);
+      } catch (err) {
+        fastify.log.error({ err }, '✗ Error durante cierre');
         process.exit(1);
       }
     });
   });
 
-  // ============================================
-  // Iniciar Servidor
-  // ============================================
   try {
-    await fastify.listen({ port: PORT, host: HOST });
-    console.log(`\n🚀 RanchUNI API iniciado en ${HOST}:${PORT}`);
-    console.log(`📝 Ambiente: ${NODE_ENV}`);
-    console.log(`📊 Health check: http://${HOST}:${PORT}/health\n`);
-  } catch (error) {
-    console.error('✗ Error iniciando servidor:', error);
+    await fastify.listen({ port: config.API_PORT, host: config.API_HOST });
+    fastify.log.info(`🚀 RanchUNI API en ${config.API_HOST}:${config.API_PORT}`);
+  } catch (err) {
+    fastify.log.error({ err }, '✗ Error iniciando servidor');
     await prisma.$disconnect();
-    await redisClient.quit();
+    await disconnectRedis();
     process.exit(1);
   }
 }
 
-// Ejecutar inicio
-start().catch((error) => {
-  console.error('✗ Error fatal:', error);
-  process.exit(1);
-});
+start();
