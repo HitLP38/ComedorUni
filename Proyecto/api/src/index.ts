@@ -14,6 +14,7 @@ import { colaRoutes } from './modules/cola/cola.routes.js';
 import { adminRoutes } from './modules/admin/admin.routes.js';
 import { operadorRoutes } from './modules/operador/operador.routes.js';
 import { startColaWorker, startPubSubListener } from './modules/cola/cola.worker.js';
+import { startNoShowWorker } from './modules/sancion/sancion.worker.js';
 
 async function build() {
   const fastify = Fastify({
@@ -91,6 +92,7 @@ async function start() {
     fastify.log.info(`🚀 RanchUNI API en ${config.API_HOST}:${config.API_PORT}`);
     await startColaWorker();
     await startPubSubListener();
+    await startNoShowWorker();
   } catch (err) {
     fastify.log.error({ err }, '✗ Error iniciando servidor');
     await prisma.$disconnect();
