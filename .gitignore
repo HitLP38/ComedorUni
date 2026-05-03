@@ -155,3 +155,8 @@ temp/
 notas-personales/
 *.private.md
 scratch/
+
+# -------------------------------
+# Claude Code (worktrees y configuración local)
+# -------------------------------
+.claude/

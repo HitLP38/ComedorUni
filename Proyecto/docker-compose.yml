@@ -1,0 +1,111 @@
+version: '3.8'
+
+services:
+  # ============================================
+  # PostgreSQL 15 - Base de Datos Principal
+  # ============================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: comedoruni_postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ranchuni_network
+
+  # ============================================
+  # Redis 7 - Cache y Cola Virtual
+  # ============================================
+  redis:
+    image: redis:7-alpine
+    container_name: comedoruni_redis
+    command: redis-server
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ranchuni_network
+
+  # ============================================
+  # API Fastify - Backend
+  # ============================================
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: comedoruni_api
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_URL: ${REDIS_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      NODE_ENV: ${NODE_ENV}
+      API_PORT: ${API_PORT}
+      CORS_ORIGIN: ${CORS_ORIGIN}
+      GOOGLE_RECAPTCHA_SECRET: ${GOOGLE_RECAPTCHA_SECRET}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SMTP_FROM: ${SMTP_FROM}
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./api/src:/app/src
+    networks:
+      - ranchuni_network
+    command: npm run dev
+
+  # ============================================
+  # React + Vite - Frontend
+  # ============================================
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: comedoruni_web
+    environment:
+      VITE_API_URL: ${VITE_API_URL}
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+    volumes:
+      - ./web/src:/app/src
+    networks:
+      - ranchuni_network
+    command: npm run dev
+
+# ============================================
+# Volúmenes Persistentes
+# ============================================
+volumes:
+  postgres_data:
+  redis_data:
+
+# ============================================
+# Red de Contenedores
+# ============================================
+networks:
+  ranchuni_network:
+    driver: bridge

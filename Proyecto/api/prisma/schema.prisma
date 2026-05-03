@@ -1,0 +1,206 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// Entidad: Alumno (Usuario)
+// ============================================
+model Alumno {
+  id                      Int       @id @default(autoincrement())
+  codigo_alumno           String    @unique @db.VarChar(8)
+  dni                     String    @unique @db.VarChar(8)
+  nombres_apellidos       String    @db.VarChar(255)
+  correo_uni              String    @unique @db.VarChar(255)
+  facultad                String    @db.VarChar(100)
+  pin_hash                String    @db.VarChar(255)
+  estado                  EstadoAlumno @default(ACTIVO)
+  inasistencias_acumuladas Int       @default(0)
+  fecha_suspension_hasta  DateTime?
+  fecha_creacion          DateTime  @default(now())
+  fecha_ultima_modificacion DateTime @updatedAt
+
+  // Relaciones
+  tickets                 Ticket[]
+  sanciones               Sancion[]
+  otpcodes                OTPCode[]
+  logs_acceso             LogAcceso[]
+
+  @@map("alumnos")
+}
+
+enum EstadoAlumno {
+  ACTIVO
+  SUSPENDIDO_7D
+  SUSPENDIDO_MANUAL
+}
+
+// ============================================
+// Entidad: Servicio (ALMUERZO, CENA)
+// ============================================
+model Servicio {
+  id                      Int       @id @default(autoincrement())
+  nombre                  String    @unique @db.VarChar(50)
+  hora_apertura_reserva   String    @db.VarChar(5) // HH:MM
+  hora_cierre_reserva     String    @db.VarChar(5) // HH:MM
+  duracion_servicio_minutos Int
+  activo                  Boolean   @default(true)
+
+  // Relaciones
+  turnos                  Turno[]
+
+  @@map("servicios")
+}
+
+// ============================================
+// Entidad: Turno (horarios dentro de servicio)
+// ============================================
+model Turno {
+  id                  Int       @id @default(autoincrement())
+  servicio_id         Int
+  hora_inicio         String    @db.VarChar(5) // HH:MM
+  duracion_minutos    Int
+  cupo_maximo         Int
+  cupo_actual         Int
+  fecha               DateTime  @db.Date
+  estado              EstadoTurno @default(ABIERTO)
+  fecha_creacion      DateTime  @default(now())
+
+  // Relaciones
+  servicio            Servicio  @relation(fields: [servicio_id], references: [id])
+  tickets             Ticket[]
+
+  @@unique([servicio_id, fecha, hora_inicio])
+  @@index([fecha])
+  @@index([servicio_id])
+  @@map("turnos")
+}
+
+enum EstadoTurno {
+  ABIERTO
+  CERRADO
+  COMPLETO
+}
+
+// ============================================
+// Entidad: Ticket (Reserva individual)
+// ============================================
+model Ticket {
+  id                      Int       @id @default(autoincrement())
+  alumno_id               Int
+  turno_id                Int
+  fecha                   DateTime  @db.Date
+  codigo_ticket           String    @unique @db.VarChar(36) // UUID
+  estado                  EstadoTicket @default(PENDIENTE)
+  timestamp_creacion      DateTime  @default(now())
+  timestamp_validacion    DateTime?
+  timestamp_expiracion    DateTime
+
+  // Relaciones
+  alumno                  Alumno    @relation(fields: [alumno_id], references: [id])
+  turno                   Turno     @relation(fields: [turno_id], references: [id])
+  sancion                 Sancion?
+
+  @@unique([alumno_id, fecha, turno_id])
+  @@index([estado])
+  @@index([alumno_id])
+  @@index([turno_id])
+  @@map("tickets")
+}
+
+enum EstadoTicket {
+  PENDIENTE
+  ACTIVO
+  CONSUMIDO
+  EXPIRADO
+  CANCELADO
+  NO_SHOW
+}
+
+// ============================================
+// Entidad: Sanción (Sistema de castigos)
+// ============================================
+model Sancion {
+  id                  Int       @id @default(autoincrement())
+  alumno_id           Int
+  tipo                TipoSancion
+  ticket_id           Int?        @unique
+  fecha_aplicacion    DateTime  @default(now())
+  fecha_levantamiento DateTime?
+  razon               String?   @db.Text
+  resuelta            Boolean   @default(false)
+
+  // Relaciones
+  alumno              Alumno    @relation(fields: [alumno_id], references: [id])
+  ticket              Ticket?   @relation(fields: [ticket_id], references: [id])
+
+  @@index([alumno_id])
+  @@index([tipo])
+  @@map("sanciones")
+}
+
+enum TipoSancion {
+  INASISTENCIA
+  ADVERTENCIA
+  SUSPENSION_7D
+  SUSPENSION_MANUAL
+}
+
+// ============================================
+// Entidad: OTPCode (Códigos de un solo uso)
+// ============================================
+model OTPCode {
+  id                      Int       @id @default(autoincrement())
+  alumno_id               Int
+  codigo                  String    @db.VarChar(6)
+  timestamp_generacion    DateTime  @default(now())
+  timestamp_expiracion    DateTime
+  intentos_fallidos       Int       @default(0)
+  consumido               Boolean   @default(false)
+
+  // Relaciones
+  alumno                  Alumno    @relation(fields: [alumno_id], references: [id])
+
+  @@index([alumno_id])
+  @@index([timestamp_expiracion])
+  @@map("otp_codes")
+}
+
+// ============================================
+// Entidad: LogAcceso (Auditoría)
+// ============================================
+model LogAcceso {
+  id                  Int       @id @default(autoincrement())
+  alumno_id           Int?
+  tipo_evento         TipoEvento
+  ip_origen           String    @db.VarChar(45) // Soporta IPv6
+  timestamp           DateTime  @default(now())
+  detalles_json       String?   @db.Text // JSON serializado
+
+  // Relaciones
+  alumno              Alumno?   @relation(fields: [alumno_id], references: [id])
+
+  @@index([tipo_evento])
+  @@index([alumno_id])
+  @@index([timestamp])
+  @@map("logs_acceso")
+}
+
+enum TipoEvento {
+  LOGIN_EXITOSO
+  LOGIN_FALLIDO
+  REGISTRO_INICIO
+  REGISTRO_VERIFICACION
+  RESERVA_CREADA
+  TICKET_VALIDADO
+  SANCION_APLICADA
+  CAMBIO_PIN
+  SOLICITUD_CREADA
+  ACCESO_ADMIN
+  QUEUE_LIBERATION
+}
