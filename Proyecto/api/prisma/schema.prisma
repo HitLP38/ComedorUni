@@ -173,6 +173,20 @@ model OTPCode {
 }
 
 // ============================================
+// Entidad: Administrador
+// ============================================
+model Administrador {
+  id             Int      @id @default(autoincrement())
+  username       String   @unique @db.VarChar(50)
+  nombre         String   @db.VarChar(150)
+  password_hash  String   @db.VarChar(255)
+  activo         Boolean  @default(true)
+  fecha_creacion DateTime @default(now())
+
+  @@map("administradores")
+}
+
+// ============================================
 // Entidad: Operador (Personal de comedor)
 // ============================================
 model Operador {
