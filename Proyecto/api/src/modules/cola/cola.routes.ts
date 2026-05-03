@@ -33,7 +33,8 @@ export async function colaRoutes(fastify: FastifyInstance) {
     return reply.send(posicion);
   });
 
-  fastify.get('/ws/cola', { websocket: true }, (socket, req) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  fastify.get('/ws/cola', { websocket: true }, (socket: any, req) => {
     const tokenCola = (req.query as Record<string, string>)['token_cola'];
     if (!tokenCola) {
       socket.send(JSON.stringify({ tipo: 'error', mensaje: 'token_cola requerido' }));
@@ -90,7 +91,7 @@ export async function colaRoutes(fastify: FastifyInstance) {
       }, 5000);
     });
 
-    socket.on('message', (raw) => {
+    socket.on('message', (raw: Buffer | string) => {
       try {
         const msg = JSON.parse(raw.toString()) as { tipo: string };
         if (msg.tipo === 'heartbeat') resetHeartbeat();

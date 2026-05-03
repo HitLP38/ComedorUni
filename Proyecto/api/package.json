@@ -13,6 +13,8 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
     "test": "vitest run",
+    "test:integration": "vitest run --config vitest.config.integration.ts",
+    "test:all": "vitest run && vitest run --config vitest.config.integration.ts",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "lint": "eslint src --ext .ts"

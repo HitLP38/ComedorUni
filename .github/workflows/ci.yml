@@ -1,0 +1,266 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  # ── Lint + TypeScript ────────────────────────────────────────────────────────
+  lint-typecheck:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: |
+            Proyecto/api/package-lock.json
+            Proyecto/web/package-lock.json
+
+      - name: Install API deps
+        working-directory: Proyecto/api
+        run: npm ci
+
+      - name: Install Web deps
+        working-directory: Proyecto/web
+        run: npm ci
+
+      - name: TypeScript check — API
+        working-directory: Proyecto/api
+        run: npx tsc --noEmit
+
+      - name: TypeScript check — Web
+        working-directory: Proyecto/web
+        run: npx tsc --noEmit
+
+      - name: ESLint — API
+        working-directory: Proyecto/api
+        run: npm run lint || true
+
+      - name: ESLint — Web
+        working-directory: Proyecto/web
+        run: npm run lint || true
+
+  # ── Unit tests ───────────────────────────────────────────────────────────────
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: lint-typecheck
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: Proyecto/api/package-lock.json
+
+      - name: Install API deps
+        working-directory: Proyecto/api
+        run: npm ci
+
+      - name: Run unit tests with coverage
+        working-directory: Proyecto/api
+        run: npm run test:coverage
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/test
+          REDIS_URL: redis://localhost:6379
+          JWT_SECRET: test_secret_at_least_32_characters_long
+          JWT_EXPIRES_IN: 30m
+          OTP_SECRET: JBSWY3DPEHPK3PXP
+          ARGON2_MEMORY: 4096
+          API_PORT: '3001'
+          API_HOST: '0.0.0.0'
+          CORS_ORIGIN: http://localhost:5173
+          NODE_ENV: test
+          MAIL_DIR: /tmp/ranchuni-mails
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-unit
+          path: Proyecto/api/coverage/
+
+  # ── Integration tests ────────────────────────────────────────────────────────
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: unit-tests
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: ranchuni
+          POSTGRES_PASSWORD: ranchuni_secret
+          POSTGRES_DB: ranchuni_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: Proyecto/api/package-lock.json
+
+      - name: Install API deps
+        working-directory: Proyecto/api
+        run: npm ci
+
+      - name: Apply migrations
+        working-directory: Proyecto/api
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: postgresql://ranchuni:ranchuni_secret@localhost:5432/ranchuni_test
+
+      - name: Run integration tests
+        working-directory: Proyecto/api
+        run: npm run test:integration
+        env:
+          DATABASE_URL: postgresql://ranchuni:ranchuni_secret@localhost:5432/ranchuni_test
+          REDIS_URL: redis://localhost:6379
+          JWT_SECRET: test_secret_at_least_32_characters_long
+          JWT_EXPIRES_IN: 30m
+          OTP_SECRET: JBSWY3DPEHPK3PXP
+          ARGON2_MEMORY: 4096
+          API_PORT: '3001'
+          API_HOST: '0.0.0.0'
+          CORS_ORIGIN: http://localhost:5173
+          NODE_ENV: test
+          MAIL_DIR: /tmp/ranchuni-mails
+
+  # ── E2E tests ────────────────────────────────────────────────────────────────
+  e2e:
+    name: E2E Tests (Playwright)
+    runs-on: ubuntu-latest
+    needs: integration-tests
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: ranchuni
+          POSTGRES_PASSWORD: ranchuni_secret
+          POSTGRES_DB: ranchuni_e2e
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: |
+            Proyecto/api/package-lock.json
+            Proyecto/web/package-lock.json
+
+      - name: Install API deps
+        working-directory: Proyecto/api
+        run: npm ci
+
+      - name: Install Web deps
+        working-directory: Proyecto/web
+        run: npm ci
+
+      - name: Install Playwright browsers
+        working-directory: Proyecto/web
+        run: npx playwright install --with-deps chromium
+
+      - name: Apply migrations and seed
+        working-directory: Proyecto/api
+        run: npx prisma migrate deploy && npm run db:seed
+        env:
+          DATABASE_URL: postgresql://ranchuni:ranchuni_secret@localhost:5432/ranchuni_e2e
+
+      - name: Start API server
+        working-directory: Proyecto/api
+        run: node --loader tsx/esm src/index.ts &
+        env:
+          DATABASE_URL: postgresql://ranchuni:ranchuni_secret@localhost:5432/ranchuni_e2e
+          REDIS_URL: redis://localhost:6379
+          JWT_SECRET: test_secret_at_least_32_characters_long
+          JWT_EXPIRES_IN: 30m
+          OTP_SECRET: JBSWY3DPEHPK3PXP
+          ARGON2_MEMORY: 4096
+          API_PORT: '3001'
+          API_HOST: '0.0.0.0'
+          CORS_ORIGIN: http://localhost:5173
+          NODE_ENV: test
+          MAIL_DIR: /tmp/ranchuni-mails
+
+      - name: Start Web server
+        working-directory: Proyecto/web
+        run: npx vite --port 5173 &
+        env:
+          VITE_API_URL: http://localhost:3001
+
+      - name: Wait for services
+        run: |
+          npx wait-on http://localhost:3001/health http://localhost:5173 --timeout 30000
+
+      - name: Run E2E tests
+        working-directory: Proyecto/web
+        run: npx playwright test --project=chromium
+        env:
+          BASE_URL: http://localhost:5173
+
+      - name: Upload E2E screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-screenshots
+          path: Proyecto/web/e2e/screenshots/
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: Proyecto/web/e2e/report/

@@ -80,8 +80,9 @@ export async function holdCupo(data: { token_reserva: string; turno_id: number }
     ],
   });
 
-  if (result === -1 || result === 0n || result === 0) {
-    throw result === -1 || result === -1n ? Errors.TURNO_SIN_CUPO() : Errors.TURNO_SIN_CUPO();
+  const resultNum = typeof result === 'bigint' ? Number(result) : (result as number);
+  if (resultNum <= 0) {
+    throw Errors.TURNO_SIN_CUPO();
   }
 
   return { hold_id: `${data.turno_id}:${alumnoId}`, ttl_segundos: HOLD_CUPO_SEG };
