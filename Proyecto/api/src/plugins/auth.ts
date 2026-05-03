@@ -1,4 +1,5 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import fp from 'fastify-plugin';
 import { verifyToken, extractToken } from '../lib/jwt.js';
 import { Errors } from '../errors/AppError.js';
 
@@ -18,8 +19,10 @@ async function authenticateOperador(request: FastifyRequest, reply: FastifyReply
   if (request.user?.role !== 'OPERADOR' && request.user?.role !== 'ADMIN') throw Errors.NO_AUTORIZADO();
 }
 
-export async function authPlugin(fastify: FastifyInstance) {
+async function authPluginFn(fastify: FastifyInstance) {
   fastify.decorate('authenticate', authenticate);
   fastify.decorate('authenticateAdmin', authenticateAdmin);
   fastify.decorate('authenticateOperador', authenticateOperador);
 }
+
+export const authPlugin = fp(authPluginFn);

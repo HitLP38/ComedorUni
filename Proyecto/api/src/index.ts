@@ -12,6 +12,7 @@ import { authRoutes } from './modules/auth/auth.routes.js';
 import { reservaRoutes } from './modules/reserva/reserva.routes.js';
 import { colaRoutes } from './modules/cola/cola.routes.js';
 import { adminRoutes } from './modules/admin/admin.routes.js';
+import { startColaWorker, startPubSubListener } from './modules/cola/cola.worker.js';
 
 async function build() {
   const fastify = Fastify({
@@ -86,6 +87,8 @@ async function start() {
   try {
     await fastify.listen({ port: config.API_PORT, host: config.API_HOST });
     fastify.log.info(`🚀 RanchUNI API en ${config.API_HOST}:${config.API_PORT}`);
+    await startColaWorker();
+    await startPubSubListener();
   } catch (err) {
     fastify.log.error({ err }, '✗ Error iniciando servidor');
     await prisma.$disconnect();
